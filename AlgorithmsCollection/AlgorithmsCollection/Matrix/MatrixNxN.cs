@@ -41,11 +41,10 @@ namespace AlgorithmsCollection
                 for (int column = 0; column < Columns; column++)
                 {
                     var submatrix = CreateSubmatrix(this, row, column);
-                    cofactorMatrix[row, column] = (dynamic)DeterminantLaPlace(submatrix) * (int)Math.Pow(-1, row + column);
+                    cofactorMatrix[row, column] = (dynamic)submatrix.Determinant() * (int)Math.Pow(-1, row + column);
                 }
             }
-            var cofactorMatrixTransposed = cofactorMatrix.Transpose();
-            return new MatrixNxN<T>(cofactorMatrixTransposed * (dynamic)1.0 / Determinant());
+            return new MatrixNxN<T>(cofactorMatrix.Transpose() * ((dynamic)1.0 / Determinant()));
         }
 
         public List<double> CramersRule(List<T> equationRightSideResults)
@@ -84,6 +83,10 @@ namespace AlgorithmsCollection
         
         private static T DeterminantLaPlace(MatrixNxN<T> matrix)
         {
+            if (matrix.Rows == 1) // matrix.Columns == 1
+            {
+                return matrix[0, 0];
+            }
             if (matrix.Rows == 2) // matrix.Columns == 2
             {
                 var ac = (dynamic)matrix[0, 0] * matrix[1, 1];
@@ -118,16 +121,8 @@ namespace AlgorithmsCollection
 
         private static MatrixNxN<T> CreateMatrixForCramersRule(MatrixNxN<T> matrixFrom, int skipColumn, List<T> equationRightSideResults)
         {
-            var matrix = new MatrixNxN<T>(matrixFrom.Rows);
-            var columnIndex = 0;
-            for (int column = 0; column < matrixFrom.Columns; column++)
-            {
-                if (column != skipColumn)
-                {
-                    matrix.SetColumn(columnIndex++, matrix.GetColumn(column).ToList());
-                }
-            }
-            matrix.SetColumn(columnIndex, equationRightSideResults);
+            var matrix = new MatrixNxN<T>(matrixFrom);
+            matrix.SetColumn(skipColumn, equationRightSideResults);
             return matrix;
         }
     }

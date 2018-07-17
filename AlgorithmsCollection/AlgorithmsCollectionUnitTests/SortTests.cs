@@ -1,14 +1,142 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using AlgorithmsCollection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace AlgorithmsCollectionUnitTests
 {
     [TestClass]
-    public class QuickSortTests
+    public class SortTests
     {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void HeapSortArrayNull()
+        {
+            Sort.HeapSort(null, Comparer<int>.Default);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void HeapSortComparerNull()
+        {
+            Sort.HeapSort(new int[] { }, null);
+        }
+
+        [TestMethod]
+        public void HeapSortEmpty()
+        {
+            var array = new int[0] { };
+            Sort.HeapSort(array, Comparer<int>.Default);
+        }
+
+        [TestMethod]
+        public void HeapSortSimple()
+        {
+            var array = new int[] { 66, 42, 314, 22, 11, 13, 13, 0, -56, -69 };
+            Sort.HeapSort(array, Comparer<int>.Default);
+            Assert.IsTrue(TestHelper.IsSortedAscending(array));
+        }
+
+        [TestMethod]
+        public void HeapSortAdvanced()
+        {
+            {
+                var array = new int[] { -42, -42, 314, 22, 0, 41, 14, 11, 13, 13, 0, 5, -56, -800 };
+                Sort.HeapSort(array, TestHelper.DescedingComparer<int>());
+                Assert.IsTrue(TestHelper.IsSortedAscending(array.Reverse()));
+            }
+            {
+                var array = new float[] { 0.225f, 2.4f, 888.8f, 42.424242f, 0.98f, 0.435f };
+                Sort.HeapSort(array, NumericUtilities.FloatNumberComparer<float>());
+                Assert.IsTrue(TestHelper.IsSortedAscending(array));
+            }
+        }
+
+        [TestMethod]
+        public void HeapSortLargeArray()
+        {
+            var rand = new Random();
+            var array = new int[500];
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = rand.Next();
+            }
+            Sort.HeapSort(array, Comparer<int>.Default);
+            Assert.IsTrue(TestHelper.IsSortedAscending(array));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MergeSortArrayNull()
+        {
+            Sort.MergeSort(null, Comparer<int>.Default);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MergeSortComparerNull()
+        {
+            Sort.MergeSort(new int[] { }, null);
+        }
+
+        [TestMethod]
+        public void MergeSortArrayEmpty()
+        {
+            Sort.MergeSort(new int[] { }, Comparer<int>.Default);
+        }
+
+        [TestMethod]
+        public void MergeSortOneElement()
+        {
+            var values = new int[] { 42 };
+            Sort.MergeSort(values, Comparer<int>.Default);
+            Assert.AreEqual(values[0], 42);
+        }
+
+        [TestMethod]
+        public void MergeSortEven()
+        {
+            {
+                var values = new int[] { 22, 11 };
+                Sort.MergeSort(values, Comparer<int>.Default);
+                Assert.IsTrue(TestHelper.IsSortedAscending(values));
+            }
+            {
+                var values = new int[] { 3, 2, 56, -12, 5, 6 };
+                Sort.MergeSort(values, Comparer<int>.Default);
+                Assert.IsTrue(TestHelper.IsSortedAscending(values));
+            }
+            {
+                var values = new int[] { 6, 7, 66, 42, 314, -714, 13, 16 };
+                Sort.MergeSort(values, TestHelper.DescedingComparer<int>());
+                Assert.IsTrue(TestHelper.IsSortedAscending(values.Reverse()));
+            }
+        }
+
+        [TestMethod]
+        public void MergeSortOdd()
+        {
+            {
+                var values = new int[] { 22, 11, 33 };
+                Sort.MergeSort(values, Comparer<int>.Default);
+                Assert.IsTrue(TestHelper.IsSortedAscending(values));
+            }
+            {
+                var values = new int[] { 16, 32, 64, -128, 256, -512, -1024, 2048, 4096 };
+                Sort.MergeSort(values, TestHelper.DescedingComparer<int>());
+                Assert.IsTrue(TestHelper.IsSortedAscending(values.Reverse()));
+            }
+        }
+
+        [TestMethod]
+        public void MergeSortFloat()
+        {
+            var values = new float[] { 3.14f, 66.6f, 42.5f, 0.567f, -867.3f, 55.7f, 14.3f };
+            Sort.MergeSort(values, NumericUtilities.FloatNumberComparer<float>());
+            Assert.IsTrue(TestHelper.IsSortedAscending(values));
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void QuickSortClassicNullArray()
@@ -22,13 +150,13 @@ namespace AlgorithmsCollectionUnitTests
         {
             Sort.QuickSortClassic(new int[0], null);
         }
-        
+
         [TestMethod]
         public void QuickSortClassicEmpty()
         {
             Sort.QuickSortClassic(new int[0], Comparer<int>.Default);
         }
-        
+
         [TestMethod]
         public void QuickSortClassicEven()
         {
@@ -45,7 +173,7 @@ namespace AlgorithmsCollectionUnitTests
             {
                 var random = new Random();
                 var array = new int[random.Next(50) * 2 + 1];
-                for(int i = 0; i < array.Length; i++)
+                for (int i = 0; i < array.Length; i++)
                 {
                     array[i] = random.Next();
                 }

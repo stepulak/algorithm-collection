@@ -494,5 +494,96 @@ namespace AlgorithmsCollectionUnitTests
             var expectedMatrix = new MatrixNxN<double>(expected);
             Assert.IsTrue(matrix.Equals(expectedMatrix));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MatrixCramersRuleInvalidEquationResults()
+        {
+            var values = new int[,]
+            {
+                { 1, 2 },
+                { 3, 4 }
+            };
+            var matrix = new MatrixNxN<int>(values).CramersRule(new List<int> { 1, 2, 3 });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void MatrixCramersRuleNoValidResult()
+        {
+            var values = new double[,]
+            {
+                { 1, -1, 2 },
+                { 4, 4, -2 },
+                { -2, 2, -4 }
+            };
+            new MatrixNxN<double>(values).CramersRule(new List<double> { -3, 1, 6 });
+        }
+
+        [TestMethod]
+        public void MatrixCramersRuleValidResult()
+        {
+            var values = new double[,]
+            {
+                { 8, -1, -2 },
+                { -1, 7, -1 },
+                { -2, -1, 9 }
+            };
+            var result = new MatrixNxN<double>(values).CramersRule(new List<double> { 0, 10, 23 });
+            var expectedResult = new List<double> { 1, 2, 3 };
+            Assert.IsTrue(result.SequenceEqual(expectedResult, NumericUtilities.FloatNumberEqualityComparer<double>()));
+        }
+
+        [TestMethod]
+        public void MatrixDivision()
+        {
+            var values1 = new double[,]
+            {
+                { 1, 2, 3 },
+                { 5, 6, 7 },
+                { 0, 0, 0 }
+            };
+            var values2 = new double[,]
+            {
+                { -7, -9, 11 },
+                { 10, -14, -5 },
+                { 4, -10, 10 }
+            };
+            var expectedValues = new double[,]
+            {
+                { -281/963.0, -283/963.0, 913/1926.0 },
+                { -989/963.0, -763/963.0, 2761/1926.0 },
+                { 0, 0, 0 }
+            };
+            var result = new MatrixNxN<double>(values1) / new MatrixNxN<double>(values2);
+            Assert.IsTrue(result.SequenceEqual(Enumerable.Cast<double>(expectedValues), NumericUtilities.FloatNumberEqualityComparer<double>()));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Matrix3x3ConstructorInvalidValuesSize()
+        {
+            new Matrix3x3<int>(new int[3, 2]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Matrix3x3ConstructorInvalidMatrixSize()
+        {
+            new Matrix3x3<int>(new Matrix<int>(1, 2));
+        }
+
+        [TestMethod]
+        public void MatrixDeterminantSarrusRule()
+        {
+            var values = new int[,]
+            {
+                { 1, 1, 2 },
+                { 3, 5, 1 },
+                { 2, 8, 6 }
+            };
+            var result = new Matrix3x3<int>(values).DeterminantSarrusRule();
+            Assert.AreEqual(result, 34);
+        }
     }
 }

@@ -25,12 +25,12 @@ namespace AlgorithmsCollection
             var invDiagonal1 = (dynamic)this[0, 2] * this[1, 1] * this[2, 0];
             var invDiagonal2 = (dynamic)this[0, 0] * this[1, 2] * this[2, 1];
             var invDiagonal3 = (dynamic)this[0, 1] * this[1, 0] * this[2, 2];
-            return diagonal1 * diagonal2 * diagonal3 - invDiagonal1 * invDiagonal2 * invDiagonal3;
+            return diagonal1 + diagonal2 + diagonal3 - invDiagonal1 - invDiagonal2 - invDiagonal3;
         }
 
         private static T[,] CheckValuesDimensions3x3(T[,] values)
         {
-            if (values.Length != values.GetLength(1) && values.Length != 3)
+            if (values.GetLength(0) != values.GetLength(1) && values.GetLength(0) != 3)
             {
                 throw new ArgumentException("Invalid matrix proportions. Must be 3x3.");
             }
