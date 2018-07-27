@@ -61,6 +61,7 @@
     <Compile Include="Sort\Sort.cs" />
     <Compile Include="Numeric\NumericUtilities.cs" />
     <Compile Include="Collections\Vector.cs" />
+    <Compile Include="Various\Optional.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

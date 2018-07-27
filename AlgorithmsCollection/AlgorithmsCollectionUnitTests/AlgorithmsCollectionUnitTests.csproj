@@ -61,6 +61,8 @@
     <Compile Include="StatisticsTests.cs" />
     <Compile Include="MatrixTests.cs" />
     <Compile Include="SortTests.cs" />
+    <Compile Include="HashTableTests.cs" />
+    <Compile Include="OptionalTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

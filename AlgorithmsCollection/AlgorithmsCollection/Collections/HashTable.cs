@@ -11,7 +11,7 @@ namespace AlgorithmsCollection
     {
         public const int TableSizeDefault = 1024;
         public int TableSize => table.Length;
-        public int Count { get; private set; }
+        public int Count { get; private set; } = 0;
         public bool IsReadOnly => false;
         
         public List<TKey> Keys => table.SelectMany(list => list.Select(pair => pair.Key)).ToList();
@@ -26,7 +26,7 @@ namespace AlgorithmsCollection
             {
                 throw new ArgumentOutOfRangeException("Table size must be positive");
             }
-            Clear();
+            table = new List<KeyValuePair<TKey, TValue>>[tableSize];
         }
 
         public HashTable(IDictionary<TKey, TValue> dictionary, int tableSize = TableSizeDefault) : this(tableSize)
@@ -75,7 +75,7 @@ namespace AlgorithmsCollection
         {
             int hash = ComputeHash(item.Key);
             var list = table[hash] ?? (table[hash] = new List<KeyValuePair<TKey, TValue>>());
-            var index = list.FindIndex(pair => pair.Equals(item));
+            var index = list.FindIndex(pair => pair.Key.Equals(item.Key));
             if (index >= 0)
             {
                 list[index] = item; // Overwrite
@@ -148,7 +148,22 @@ namespace AlgorithmsCollection
 
         }
 
-        private int ComputeHash(TKey key) => (Comparer == null ? key.GetHashCode() : Comparer.GetHashCode(key)) % table.Length;
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        private int ComputeHash(TKey key) => Math.Abs((Comparer == null ? key.GetHashCode() : Comparer.GetHashCode(key))) % table.Length;
         private int FindIndexForKey(List<KeyValuePair<TKey, TValue>> list, TKey key) => list.FindIndex(pair => pair.Key.Equals(key));
     }
 }
