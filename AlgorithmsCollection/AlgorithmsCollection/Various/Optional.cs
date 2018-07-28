@@ -46,16 +46,11 @@ namespace AlgorithmsCollection
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if (obj is Optional<T> opt)
             {
-                return false;
-            }
-            if (obj is Optional<T>)
-            {
-                var opt = obj as Optional<T>;
                 if (!HasValue)
                 {
-                    return opt.HasValue == false;
+                    return !opt.HasValue;
                 }
                 return opt.value.Equals(value);
             }

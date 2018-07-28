@@ -182,11 +182,11 @@ namespace AlgorithmsCollection
 
         public override bool Equals(object obj)
         {
-            if (obj is Matrix<T>)
+            if (obj is Matrix<T> matrix)
             {
                 var cmp = Comparer<T>.Default;
                 return this
-                    .Zip(obj as Matrix<T>, (a, b) => cmp.Compare(a, b) == 0)
+                    .Zip(matrix, (a, b) => cmp.Compare(a, b) == 0)
                     .Count(a => a) == Rows * Columns;
             }
             return false;
@@ -194,7 +194,12 @@ namespace AlgorithmsCollection
 
         public override int GetHashCode()
         {
-            return ToString().GetHashCode();
+            int result = 0;
+            foreach (var value in this)
+            {
+                result ^= value.GetHashCode();
+            }
+            return result;
         }
 
         public override string ToString()

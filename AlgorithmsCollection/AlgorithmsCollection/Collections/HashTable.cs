@@ -46,6 +46,10 @@ namespace AlgorithmsCollection
             Comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
+        public HashTable(HashTable<TKey, TValue> from) : this(from?.ToDictionary())
+        {
+        }
+
         public TValue this[TKey key]
         {
             get
@@ -75,7 +79,7 @@ namespace AlgorithmsCollection
         {
             int hash = ComputeHash(item.Key);
             var list = table[hash] ?? (table[hash] = new List<KeyValuePair<TKey, TValue>>());
-            var index = list.FindIndex(pair => pair.Key.Equals(item.Key));
+            var index = FindIndexForKey(list, item.Key);
             if (index >= 0)
             {
                 list[index] = item; // Overwrite
@@ -114,18 +118,8 @@ namespace AlgorithmsCollection
             throw new NotImplementedException();
         }
 
-        public bool Remove(TKey key)
-        {
-            var list = table[ComputeHash(key)];
-            var index = list != null ? FindIndexForKey(list, key) : -1;
-            if (index < 0)
-            {
-                return false;
-            }
-            list.RemoveAt(index);
-            return true;
-        }
-        public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
+        public bool Remove(TKey key) => RemoveImpl(key, null);
+        public bool Remove(KeyValuePair<TKey, TValue> item) => RemoveImpl(item.Key, item.Value);
         
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -145,25 +139,82 @@ namespace AlgorithmsCollection
         
         public void ChangeTableSizeAndRehash(int newTableSize)
         {
-
+            if (newTableSize <= 0)
+            {
+                throw new ArgumentException("Table size must be positive!");
+            }
+            var oldTable = table;
+            Count = 0;
+            table = new List<KeyValuePair<TKey, TValue>>[newTableSize];
+            foreach (var list in oldTable)
+            {
+                list?.ForEach(pair => Add(pair));
+            }
         }
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            if (obj is HashTable<TKey, TValue> table)
+            {
+                if (table.Count != Count)
+                {
+                    return false;
+                }
+                return table.ToDictionary().Equals(ToDictionary());
+            }
+            return false;
         }
-
+        
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            int result = 0;
+            foreach (var pair in this)
+            {
+                result ^= pair.Key.GetHashCode();
+                result ^= pair.Value.GetHashCode();
+            }
+            return result;
         }
 
         public override string ToString()
         {
-            return base.ToString();
+            var builder = new StringBuilder();
+            foreach (var pair in ToDictionary()) // In case of different order
+            {
+                builder.Append($"{pair.Key}: {pair.Value};");
+            }
+            return builder.ToString();
         }
 
+        public Dictionary<TKey, TValue> ToDictionary() => this.ToDictionary(p => p.Key, p => p.Value);
+        
         private int ComputeHash(TKey key) => Math.Abs((Comparer == null ? key.GetHashCode() : Comparer.GetHashCode(key))) % table.Length;
         private int FindIndexForKey(List<KeyValuePair<TKey, TValue>> list, TKey key) => list.FindIndex(pair => pair.Key.Equals(key));
+
+        private bool RemoveImpl(TKey key, Optional<TValue> value)
+        {
+            var list = table[ComputeHash(key)];
+            if (list == null)
+            {
+                return false;
+            }
+            int index;
+            if (value != null && value.HasValue)
+            {
+                var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
+                index = list.FindIndex(pair => pair.Equals(keyValuePair));
+            }
+            else
+            {
+                index = FindIndexForKey(list, key);
+            }
+            if (index < 0)
+            {
+                return false;
+            }
+            list.RemoveAt(index);
+            Count--;
+            return true;
+        }
     }
 }

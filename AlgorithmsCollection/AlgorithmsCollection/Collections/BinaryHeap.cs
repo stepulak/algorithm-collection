@@ -143,9 +143,16 @@ namespace AlgorithmsCollection
                 array[arrayIndex++] = value;
             }
         }
-
-        // Unefficient
-        public override int GetHashCode() => ToString().GetHashCode();
+        
+        public override int GetHashCode()
+        {
+            int result = 0;
+            foreach (var value in this)
+            {
+                result ^= value.GetHashCode();
+            }
+            return result;
+        }
 
         public override bool Equals(object obj)
         {

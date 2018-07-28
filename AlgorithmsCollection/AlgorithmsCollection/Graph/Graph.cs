@@ -360,7 +360,7 @@ namespace AlgorithmsCollection
                 yield return node.Value;
             }
         }
-        
+
         private void CreateFromConnectionList(List<GraphConnection> connectionList, List<T> nodes)
         {
             foreach (var nodeValue in nodes)
