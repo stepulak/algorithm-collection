@@ -115,7 +115,22 @@ namespace AlgorithmsCollection
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array == null)
+            {
+                throw new ArgumentNullException("Array is null");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("ArrayIndex is less than zero");
+            }
+            if (array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException("Not enough space in array");
+            }
+            foreach (var pair in this)
+            {
+                array[arrayIndex++] = pair;
+            }
         }
 
         public bool Remove(TKey key) => RemoveImpl(key, null);
@@ -160,7 +175,14 @@ namespace AlgorithmsCollection
                 {
                     return false;
                 }
-                return table.ToDictionary().Equals(ToDictionary());
+                foreach (var pair in this)
+                {
+                    if (!table.GetValue(pair.Key).Equals(pair.Value))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }

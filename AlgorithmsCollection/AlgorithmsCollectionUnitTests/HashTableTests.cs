@@ -281,32 +281,47 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void HashTableCopyTo()
         {
-            var table = new HashTable<string, int>()
+            var values = new List<KeyValuePair<string, int>>()
             {
-                { "one", 1 },
-                { "two", 2 },
-                { "three", 3 }
+                new KeyValuePair<string, int>("one", 1),
+                new KeyValuePair<string, int>("two", 2),
+                new KeyValuePair<string, int>("three", 3),
             };
+            var table = new HashTable<string, int>();
+            foreach (var value in values)
+            {
+                table.Add(value);
+            }
             var array = new KeyValuePair<string, int>[3];
-
+            table.CopyTo(array, 0);
+            Assert.IsTrue(array.SequenceEqual(values));
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void HashTableCopyToNoSpaceLeft()
         {
-
+            var table = new HashTable<int, int>()
+            {
+                { 1, 1 },
+                { 2, 2 }
+            };
+            var array = new KeyValuePair<int, int>[3];
+            table.CopyTo(array, 2);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void HashTableCopyToNegativeIndex()
         {
-
+            new HashTable<int, int>().CopyTo(new KeyValuePair<int, int>[1], -1);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void HashTableCopyToNullArray()
         {
-
+            new HashTable<int, int>().CopyTo(null, 0);
         }
     }
 }
