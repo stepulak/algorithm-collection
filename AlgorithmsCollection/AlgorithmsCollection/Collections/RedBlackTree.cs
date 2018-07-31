@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlgorithmsCollection.Collections
+namespace AlgorithmsCollection
 {
     public class RedBlackTree<T> : ICollection<T>
     {
@@ -22,8 +22,9 @@ namespace AlgorithmsCollection.Collections
             public NodeColor Color { get; set; }
             public Node Parent { get; set; } = null;
             public Node Left { get; set; } = null;
-            public Node Right { get; set; } = null;            
-            public Node Uncle => IsParentLeftSided() ? Parent?.Parent?.Left : Parent?.Parent?.Right;
+            public Node Right { get; set; } = null;
+            public Node Grandparent => Parent?.Parent;
+            public Node Uncle => IsParentLeftSided() ? Grandparent?.Left : Grandparent?.Right;
             public Node Sibling => IsLeftSided() ? Parent?.Right : Parent?.Left;
 
             public Node(T value, Node parent)
@@ -35,12 +36,11 @@ namespace AlgorithmsCollection.Collections
             
             public bool IsParentLeftSided()
             {
-                if (Parent == null || Parent.Parent == null)
+                if (Parent == null || Grandparent == null)
                 {
                     return false;
                 }
-                var grandParent = Parent.Parent;
-                return grandParent.Left == Parent;
+                return Grandparent.Left == Parent;
             }
 
             public bool IsLeftSided() => Parent?.Left == this;
@@ -75,11 +75,19 @@ namespace AlgorithmsCollection.Collections
 
         public RedBlackTree(IComparer<T> comparer)
         {
+            Comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
-        public RedBlackTree(IComparer<T> comparer, IEnumerable<T> initialValues)
+        public RedBlackTree(IComparer<T> comparer, IEnumerable<T> initialValues) : this(comparer)
         {
-
+            if (initialValues == null)
+            {
+                throw new ArgumentNullException("Initial values are null");
+            }
+            foreach (var value in initialValues)
+            {
+                Add(value);
+            }
         }
 
         public void Add(T value)
@@ -156,7 +164,7 @@ namespace AlgorithmsCollection.Collections
                 return; // balanced
             }
             var uncle = node.Uncle;
-            if (uncle == null || (uncle != null && uncle.Color == NodeColor.Red))
+            if (uncle != null && uncle.Color == NodeColor.Red)
             {
                 BalanceTreeParentAndUncleRed(node, uncle);
                 return;
@@ -174,10 +182,7 @@ namespace AlgorithmsCollection.Collections
 
         private void BalanceTreeParentAndUncleRed(Node node, Node uncle)
         {
-            if (uncle != null)
-            {
-                uncle.Color = NodeColor.Black;
-            }
+            uncle.Color = NodeColor.Black;
             node.Parent.Color = NodeColor.Black;
             BalanceTree(node.Parent.Parent);
         }
@@ -207,10 +212,40 @@ namespace AlgorithmsCollection.Collections
         }
 
         private void BalanceTreeLeftLeftSide(Node node)
-        { }
+        {
+            var grandpa = node.Grandparent;
+            var greatGrandpa = grandpa.Parent;
+            var parent = node.Parent;
+            // Swap colors
+            grandpa.Color = NodeColor.Red;
+            parent.Color = NodeColor.Black;
+            if (greatGrandpa != null)
+            {
+                if (greatGrandpa.Left == grandpa)
+                {
+                    greatGrandpa.Left = parent;
+                }
+                else
+                {
+                    greatGrandpa.Right = parent;
+                }
+            }
+            parent.Parent = greatGrandpa;
+            grandpa.Left = parent.Right;
+            parent.Right = grandpa;
+        }
 
         private void BalanceTreeLeftRightSide(Node node)
-        { }
+        {
+            var grandpa = node.Grandparent;
+            var parent = node.Parent;
+            grandpa.Left = node;
+            node.Parent = grandpa;
+            parent.Parent = node;
+            parent.Right = node.Left;
+            node.Left = parent;
+            BalanceTreeLeftLeftSide(node);
+        }
 
         private void BalanceTreeRightLeftSide(Node node)
         { }
