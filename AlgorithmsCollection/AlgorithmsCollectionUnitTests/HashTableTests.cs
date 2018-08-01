@@ -158,6 +158,47 @@ namespace AlgorithmsCollectionUnitTests
             Assert.AreEqual(table.Count, 1);
         }
 
+        struct MyValue
+        {
+            public int Value { get; set; }
+
+            public override int GetHashCode()
+            {
+                return Value % 100;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is MyValue value)
+                {
+                    return value.Value == Value;
+                }
+                return false;
+            }
+        };
+
+        [TestMethod]
+        public void HashTableValuesSameHashcode()
+        {
+            var _10 = new MyValue { Value = 10 };
+            var _110 = new MyValue { Value = 110 };
+            var _1010 = new MyValue { Value = 1010 };
+            var table = new HashTable<MyValue, int>
+            {
+                { _10, 10 },
+                { _110, 110 },
+                { _1010, 1010 }
+            };
+            Assert.AreEqual(table.Count, 3);
+            Assert.IsTrue(table.Contains(_10));
+            Assert.IsTrue(table.Contains(_110));
+            Assert.IsTrue(table.Contains(_1010));
+            Assert.IsTrue(table.Remove(_1010));
+            Assert.AreEqual(table.Count, 2);
+            Assert.IsTrue(table.Contains(_10));
+            Assert.IsTrue(table.Contains(_110));
+        }
+
         [TestMethod]
         public void HashTableEnumerator()
         {
@@ -268,7 +309,7 @@ namespace AlgorithmsCollectionUnitTests
         }
 
         [TestMethod]
-        public void HashTableString()
+        public void HashTableToString()
         {
             var table = new HashTable<string, int>()
             {

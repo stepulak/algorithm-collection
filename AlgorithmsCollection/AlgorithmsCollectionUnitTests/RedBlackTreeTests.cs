@@ -171,7 +171,7 @@ namespace AlgorithmsCollectionUnitTests
             Assert.IsNotNull(root.Left);
             Assert.IsNotNull(root.Right);
             var left = root.Left.Value;
-            Assert.AreEqual(left.Value, 1);
+            Assert.AreEqual(left.Value, -3);
             Assert.AreEqual(left.Color, RedBlackTree<int>.NodeColor.Black);
             Assert.IsNotNull(left.Parent);
             Assert.AreEqual(left.Parent.Value.Value, 2);
@@ -188,14 +188,14 @@ namespace AlgorithmsCollectionUnitTests
             Assert.AreEqual(leftLeft.Value, -5);
             Assert.AreEqual(leftLeft.Color, RedBlackTree<int>.NodeColor.Red);
             Assert.IsNotNull(leftLeft.Parent);
-            Assert.AreEqual(leftLeft.Parent.Value.Value, 1);
+            Assert.AreEqual(leftLeft.Parent.Value.Value, -3);
             Assert.IsNull(leftLeft.Left);
             Assert.IsNull(leftLeft.Right);
             var leftRight = left.Right.Value;
-            Assert.AreEqual(leftRight.Value, -3);
+            Assert.AreEqual(leftRight.Value, 1);
             Assert.AreEqual(leftRight.Color, RedBlackTree<int>.NodeColor.Red);
             Assert.IsNotNull(leftRight.Parent);
-            Assert.AreEqual(leftRight.Parent.Value.Value, 1);
+            Assert.AreEqual(leftRight.Parent.Value.Value, -3);
             Assert.IsNull(leftRight.Left);
             Assert.IsNull(leftRight.Right);
             var rightLeft = right.Left.Value;
