@@ -24,7 +24,7 @@ namespace AlgorithmsCollection
             public Node Left { get; set; } = null;
             public Node Right { get; set; } = null;
             public Node Grandparent => Parent?.Parent;
-            public Node Uncle => IsParentLeftSided() ? Grandparent?.Left : Grandparent?.Right;
+            public Node Uncle => IsParentLeftSided() ? Grandparent?.Right : Grandparent?.Left;
             public Node Sibling => IsLeftSided() ? Parent?.Right : Parent?.Left;
 
             public Node(T value, Node parent)
@@ -93,7 +93,7 @@ namespace AlgorithmsCollection
         public void Add(T value)
         {
             var node = InsertValueIntoTree(value);
-            BalanceTree(node);
+            BalanceTreeInsert(node);
         }
 
         public void Clear()
@@ -152,7 +152,7 @@ namespace AlgorithmsCollection
             return nodeToInsert.Right;
         }
 
-        private void BalanceTree(Node node)
+        private void BalanceTreeInsert(Node node)
         {
             if (node == root)
             {
@@ -166,59 +166,102 @@ namespace AlgorithmsCollection
             var uncle = node.Uncle;
             if (uncle != null && uncle.Color == NodeColor.Red)
             {
-                BalanceTreeParentAndUncleRed(node, uncle);
+                BalanceTreeInsertParentAndUncleRed(node, uncle);
                 return;
             }
             // Parent red, uncle black
             if (node.IsParentLeftSided())
             {
-                BalanceTreeLeftSide(node);
+                BalanceTreeInsertLeftSide(node);
             }
             else
             {
-                BalanceTreeRightSide(node);
+                BalanceTreeInsertRightSide(node);
             }
         }
 
-        private void BalanceTreeParentAndUncleRed(Node node, Node uncle)
+        private void BalanceTreeInsertParentAndUncleRed(Node node, Node uncle)
         {
             uncle.Color = NodeColor.Black;
             node.Parent.Color = NodeColor.Black;
-            BalanceTree(node.Parent.Parent);
+            BalanceTreeInsert(node.Parent.Parent);
         }
 
-        private void BalanceTreeLeftSide(Node node)
+        private void BalanceTreeInsertLeftSide(Node node)
         {
             if (node.IsLeftSided())
             {
-                BalanceTreeLeftLeftSide(node);
+                BalanceTreeInsertLeftLeftSide(node);
             }
             else
             {
-                BalanceTreeLeftRightSide(node);
+                BalanceTreeInsertLeftRightSide(node);
             }
         }
 
-        private void BalanceTreeRightSide(Node node)
+        private void BalanceTreeInsertRightSide(Node node)
         {
             if (node.IsLeftSided())
             {
-                BalanceTreeRightLeftSide(node);
+                BalanceTreeInsertRightLeftSide(node);
             }
             else
             {
-                BalanceTreeRightLeftSide(node);
+                BalanceTreeInsertRightRightSide(node);
             }
         }
 
-        private void BalanceTreeLeftLeftSide(Node node)
+        private void BalanceTreeInsertLeftLeftSide(Node node)
+        {
+            var parent = node.Parent;
+            var grandpa = parent.Parent;
+            BalanceTreeInsertSameSide(node, parent, grandpa);
+            grandpa.Left = parent.Right;
+            parent.Right = grandpa;
+            grandpa.Parent = parent;
+        }
+
+        private void BalanceTreeInsertLeftRightSide(Node node)
         {
             var grandpa = node.Grandparent;
-            var greatGrandpa = grandpa.Parent;
             var parent = node.Parent;
+            grandpa.Left = node;
+            node.Parent = grandpa;
+            parent.Parent = node;
+            parent.Right = node.Left;
+            node.Left = parent;
+            BalanceTreeInsertLeftLeftSide(node.Left);
+        }
+
+        private void BalanceTreeInsertRightLeftSide(Node node)
+        {
+            var grandpa = node.Grandparent;
+            var parent = node.Parent;
+            grandpa.Right = node;
+            node.Parent = grandpa;
+            parent.Parent = node;
+            parent.Left = node.Right;
+            node.Right = parent;
+            BalanceTreeInsertRightRightSide(node.Right);
+        }
+
+        private void BalanceTreeInsertRightRightSide(Node node)
+        {
+            var parent = node.Parent;
+            var grandpa = parent.Parent;
+            BalanceTreeInsertSameSide(node, parent, grandpa);
+            grandpa.Right = parent.Left;
+            parent.Left = grandpa;
+            grandpa.Parent = parent;
+        }
+
+        private void BalanceTreeInsertSameSide(Node node, Node parent, Node grandpa)
+        {
+            var greatGrandpa = grandpa.Parent;
             // Swap colors
             grandpa.Color = NodeColor.Red;
             parent.Color = NodeColor.Black;
+            // Update references to great-grandparent
             if (greatGrandpa != null)
             {
                 if (greatGrandpa.Left == grandpa)
@@ -231,26 +274,11 @@ namespace AlgorithmsCollection
                 }
             }
             parent.Parent = greatGrandpa;
-            grandpa.Left = parent.Right;
-            parent.Right = grandpa;
+            // Update root
+            if (grandpa == root)
+            {
+                root = parent;
+            }
         }
-
-        private void BalanceTreeLeftRightSide(Node node)
-        {
-            var grandpa = node.Grandparent;
-            var parent = node.Parent;
-            grandpa.Left = node;
-            node.Parent = grandpa;
-            parent.Parent = node;
-            parent.Right = node.Left;
-            node.Left = parent;
-            BalanceTreeLeftLeftSide(node);
-        }
-
-        private void BalanceTreeRightLeftSide(Node node)
-        { }
-
-        private void BalanceTreeRightRightSide(Node node)
-        { }
     }
 }
