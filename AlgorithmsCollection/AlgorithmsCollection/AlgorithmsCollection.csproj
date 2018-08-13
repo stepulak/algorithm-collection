@@ -43,8 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\BinaryHeap.cs" />
-    <Compile Include="Collections\BPlusTree.cs" />
-    <Compile Include="Collections\RedBlackTree.cs" />
+    <Compile Include="Collections\CircularQueue.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="Collections\HashTable.cs" />
     <Compile Include="Collections\LinkedList.cs" />
