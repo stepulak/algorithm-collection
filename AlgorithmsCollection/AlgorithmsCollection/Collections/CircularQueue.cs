@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlgorithmsCollection.Collections
+namespace AlgorithmsCollection
 {
     public class CircularQueue<T> : IEnumerable<T>
     {
@@ -44,6 +44,10 @@ namespace AlgorithmsCollection.Collections
                 throw new ArgumentException("Given enumerable is empty");
             }
             buffer = new T[count * 2];
+            foreach (var value in enumerable)
+            {
+                Enqueue(value);
+            }
         }
 
         public void Clear()
@@ -64,6 +68,17 @@ namespace AlgorithmsCollection.Collections
             return false;
         }
 
+        public void Enqueue(T value)
+        {
+            if (end - start == Capacity)
+            {
+                Resize(Capacity * 2);
+            }
+            buffer[EndIndex] = value;
+            end++;
+            FixBufferIndices();
+        }
+
         public T Dequeue()
         {
             if (end <= start)
@@ -71,19 +86,9 @@ namespace AlgorithmsCollection.Collections
                 throw new InvalidOperationException("Queue is empty");
             }
             var index = StartIndex;
-            start--;
+            start++;
             FixBufferIndices();
             return buffer[index];
-        }
-
-        public void Enqueue(T value)
-        {
-            if (end - start == Capacity)
-            {
-                Resize(Capacity * 2);
-            }
-            FixBufferIndices();
-            buffer[end++] = value;
         }
         
         public void Resize(int size)
@@ -122,7 +127,7 @@ namespace AlgorithmsCollection.Collections
         {
             if (size <= 0)
             {
-                throw new ArgumentException("Given size must be positive");
+                throw new ArgumentOutOfRangeException("Given size must be positive");
             }
         }
     }
