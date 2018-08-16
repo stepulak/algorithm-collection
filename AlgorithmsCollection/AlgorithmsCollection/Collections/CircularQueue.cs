@@ -13,6 +13,7 @@ namespace AlgorithmsCollection
 
         public int Count => end - start;
         public int Capacity => buffer.Length;
+        public bool Empty => Count == 0;
 
         private int StartIndex => start % Capacity;
         private int EndIndex => end % Capacity;
@@ -106,9 +107,10 @@ namespace AlgorithmsCollection
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (int index = StartIndex; index < EndIndex; index++)
+            // Since StartIndex == EndIndex && start != end might happen, solve it this way...
+            for (int index = start; index < end; index++)
             {
-                yield return buffer[index];
+                yield return buffer[index % Capacity];
             }
         }
 

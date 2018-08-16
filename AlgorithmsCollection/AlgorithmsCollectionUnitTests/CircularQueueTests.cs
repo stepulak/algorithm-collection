@@ -85,7 +85,7 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void CircularQueueContains()
         {
-            var queue = new CircularQueue<int>();
+            var queue = new CircularQueue<int>(13);
             for (int i = 0; i < 13; i++)
             {
                 queue.Enqueue(i);
@@ -109,15 +109,47 @@ namespace AlgorithmsCollectionUnitTests
         }
 
         [TestMethod]
-        public void CircularQueueResizeExplicit()
+        public void CircularQueueResizeExplicitEnlarge()
         {
+            var queue = new CircularQueue<int>(2);
+            queue.Enqueue(1);
+            queue.Resize(20);
+            Assert.AreEqual(queue.Count, 1);
+            Assert.AreEqual(queue.Capacity, 20);
+            Assert.IsTrue(queue.Contains(1));
+        }
 
+        [TestMethod]
+        public void CircularQueueResizeExplicitShrink()
+        {
+            var queue = new CircularQueue<int>(4);
+            queue.Enqueue(1);
+            queue.Enqueue(2);
+            queue.Enqueue(3);
+            queue.Enqueue(4);
+            queue.Resize(2);
+            Assert.AreEqual(queue.Count, 2);
+            Assert.AreEqual(queue.Capacity, 2);
+            Assert.IsTrue(queue.Contains(1));
+            Assert.IsTrue(queue.Contains(2));
+            Assert.IsFalse(queue.Contains(3));
+            Assert.IsFalse(queue.Contains(4));
         }
 
         [TestMethod]
         public void CircularQueueResizeImplicit()
         {
-
+            var queue = new CircularQueue<int>(2);
+            queue.Enqueue(1);
+            queue.Enqueue(2);
+            Assert.AreEqual(queue.Count, 2);
+            Assert.AreEqual(queue.Capacity, 2);
+            queue.Enqueue(3);
+            Assert.AreEqual(queue.Count, 3);
+            Assert.IsTrue(queue.Capacity > 2);
+            Assert.IsTrue(queue.Contains(1));
+            Assert.IsTrue(queue.Contains(2));
+            Assert.IsTrue(queue.Contains(3));
         }
 
         [TestMethod]
@@ -135,6 +167,42 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void CircularQueueGetEnumerator()
         {
+            var values = new LinkedList<string>
+            {
+                "Hello", "World", "Unit", "Tests"
+            };
+            var queue = new CircularQueue<string>();
+            foreach (var value in values)
+            {
+                queue.Enqueue(value);
+            }
+            foreach (var elem in queue)
+            {
+                Assert.IsTrue(values.Remove(elem));
+            }
+            Assert.AreEqual(values.Count, 0);
+        }
+
+        [TestMethod]
+        public void CircularQueueHeavyLoad()
+        {
+            var queue = new CircularQueue<int>(5);
+            for (int repeats = 1; repeats <= 100; repeats++)
+            {
+                var values = Enumerable.Range(120, 100).Select(val => val % repeats).ToList();
+                foreach (var value in values)
+                {
+                    queue.Enqueue(value);
+                }
+                Assert.AreEqual(queue.Count, values.Count);
+                Assert.IsTrue(queue.Capacity >= values.Count);
+                foreach (var value in values)
+                {
+                    Assert.AreEqual(queue.Dequeue(), value);
+                }
+                queue.Clear();
+                queue.Resize(repeats % 10 + 1);
+            }
         }
     }
 }
