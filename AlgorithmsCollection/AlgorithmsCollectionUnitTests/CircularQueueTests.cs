@@ -204,5 +204,51 @@ namespace AlgorithmsCollectionUnitTests
                 queue.Resize(repeats % 10 + 1);
             }
         }
+
+        [TestMethod]
+        public void CircularQueueEquals()
+        {
+            var queue = new CircularQueue<int>();
+            queue.Enqueue(1);
+            queue.Enqueue(2);
+            Assert.IsTrue(queue.Equals(queue));
+            Assert.IsFalse(queue.Equals(null));
+            var queue2 = new CircularQueue<int>();
+            Assert.IsFalse(queue.Equals(queue2));
+            queue2.Enqueue(1);
+            queue2.Enqueue(2);
+            Assert.IsTrue(queue2.Equals(queue));
+        }
+
+        [TestMethod]
+        public void CircularQueueHashCode()
+        {
+            var queue = new CircularQueue<int>();
+            queue.Enqueue(1);
+            queue.Enqueue(2);
+            var queue2 = new CircularQueue<int>();
+            queue2.Enqueue(4556);
+            var queue3 = new CircularQueue<string>();
+            Assert.AreNotEqual(queue.GetHashCode(), queue2.GetHashCode());
+            Assert.AreNotEqual(queue.GetHashCode(), queue3.GetHashCode());
+            queue2.Dequeue();
+            queue2.Enqueue(1);
+            queue2.Enqueue(2);
+            Assert.AreEqual(queue2.GetHashCode(), queue.GetHashCode());
+        }
+
+        [TestMethod]
+        public void CircularQueueToString()
+        {
+            var queue = new CircularQueue<string>();
+            queue.Enqueue("Hello");
+            queue.Enqueue("World");
+            Assert.AreEqual(queue.ToString(), "Hello;World;");
+            var queue2 = new CircularQueue<int>();
+            queue2.Enqueue(1);
+            queue2.Enqueue(2);
+            queue2.Enqueue(4);
+            Assert.AreEqual(queue2.ToString(), "1;2;4;");
+        }
     }
 }

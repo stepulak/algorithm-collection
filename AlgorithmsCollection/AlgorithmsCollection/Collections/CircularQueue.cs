@@ -116,6 +116,46 @@ namespace AlgorithmsCollection
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        public override bool Equals(object obj)
+        {
+            if (obj is CircularQueue<T> queue)
+            {
+                if (queue.Count != Count)
+                {
+                    return false;
+                }
+                for (int i = 0; i < Count; i++)
+                {
+                    if (!queue.buffer[i].Equals(buffer[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            int result = 0;
+            foreach (var value in this)
+            {
+                result ^= value.GetHashCode();
+            }
+            return result;
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            foreach (var value in this)
+            {
+                builder.Append($"{value};");
+            }
+            return builder.ToString();
+        }
+
         private void FixBufferIndices()
         {
             if (end >= Capacity && start >= Capacity)

@@ -121,6 +121,18 @@ namespace AlgorithmsCollection
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("Array is null");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("ArrayIndex is less than zero");
+            }
+            if (array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException("Not enough space in array");
+            }
             throw new NotImplementedException();
         }
 
@@ -141,17 +153,17 @@ namespace AlgorithmsCollection
 
         public T Find(Predicate<T> predicate)
         {
-
+            throw new NotImplementedException();
         }
 
         public List<T> FindAll(Predicate<T> predicate)
         {
-
+            throw new NotImplementedException();
         }
 
         public int FindIndex(T item)
         {
-
+            throw new NotImplementedException();
         }
 
         public void Resize(int size)
@@ -184,6 +196,21 @@ namespace AlgorithmsCollection
         }
         
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
 
         private void ReserveIfFull()
         {
