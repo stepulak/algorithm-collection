@@ -151,7 +151,8 @@ namespace AlgorithmsCollection
             var builder = new StringBuilder();
             foreach (var value in this)
             {
-                builder.Append($"{value};");
+                builder.Append(value);
+                builder.Append(';');
             }
             return builder.ToString();
         }

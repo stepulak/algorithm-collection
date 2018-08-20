@@ -64,6 +64,7 @@
     <Compile Include="HashTableTests.cs" />
     <Compile Include="OptionalTests.cs" />
     <Compile Include="CircularQueueTests.cs" />
+    <Compile Include="VectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

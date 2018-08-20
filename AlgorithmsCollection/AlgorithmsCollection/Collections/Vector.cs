@@ -12,7 +12,7 @@ namespace AlgorithmsCollection
         private const int DefaultCapacity = 4;
         private T[] vector = null;
 
-        public int Count { get; private set; }
+        public int Count { get; private set; } = 0;
         public bool Empty => Count == 0;
         public int Capacity => vector.Length;
         public bool IsReadOnly => false;
@@ -110,14 +110,11 @@ namespace AlgorithmsCollection
         public void Clear()
         {
             var capacity = Capacity;
-            vector = new T[capacity];
+            vector = new T[DefaultCapacity];
             Count = 0;
         }
 
-        public bool Contains(T item)
-        {
-            throw new NotImplementedException();
-        }
+        public bool Contains(T item) => FindIndex(item) != -1;
 
         public void CopyTo(T[] array, int arrayIndex)
         {
@@ -138,42 +135,101 @@ namespace AlgorithmsCollection
 
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            var index = FindIndex(item);
+            if (index != -1)
+            {
+                RemoveAt(index);
+                return true;
+            }
+            return false;
         }
 
         public void RemoveAt(int index)
         {
-
+            CheckIndexBoundaryThrow(index);
+            if (index < Count - 1)
+            {
+                vector.Skip(index + 1).ToArray().CopyTo(vector, index);
+            }
         }
 
         public void RemoveAll(Predicate<T> predicate)
         {
-
+            var indices = FindAllIndices(predicate);
+            indices.ForEach(index => RemoveAt(index));
         }
 
         public T Find(Predicate<T> predicate)
         {
-            throw new NotImplementedException();
+            CheckPredicateNullThrow(predicate);
+            foreach (var value in this)
+            {
+                if (predicate(value))
+                {
+                    return value;
+                }
+            }
+            return default(T);
         }
 
-        public List<T> FindAll(Predicate<T> predicate)
-        {
-            throw new NotImplementedException();
-        }
+        public List<T> FindAll(Predicate<T> predicate) => FindAllIndices(predicate).Select(index => vector[index]).ToList();
 
         public int FindIndex(T item)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < Count; i++)
+            {
+                if (vector[i].Equals(item))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public List<int> FindAllIndices(Predicate<T> predicate)
+        {
+            CheckPredicateNullThrow(predicate);
+            var result = new List<int>();
+            for (int i = 0; i < Count; i++)
+            {
+                if (predicate(vector[i]))
+                {
+                    result.Add(i);
+                }
+            }
+            return result;
         }
 
         public void Resize(int size)
         {
-
+            if (size <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Given size must be positive");
+            }
+            if (size == Count)
+            {
+                return; // Skip
+            }
+            Count = size;
+            var oldVector = vector;
+            vector = new T[Count];
+            oldVector.Take(Count).ToArray().CopyTo(vector, 0);
         }
         
-        public void Reserve(int size)
+        public void Reserve(int capacity)
         {
-
+            if (capacity < Count)
+            {
+                Resize(capacity);
+                return;
+            }
+            if (capacity <= Capacity)
+            {
+                return; // Skip
+            }
+            var oldVector = vector;
+            vector = new T[capacity];
+            oldVector.CopyTo(vector, 0);
         }
 
         public void Swap(int index1, int index2)
@@ -199,17 +255,43 @@ namespace AlgorithmsCollection
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            if (obj is Vector<T> vector)
+            {
+                if (Count != vector.Count)
+                {
+                    return false;
+                }
+                for (int i = 0; i < Count; i++)
+                {
+                    if (!vector.vector[i].Equals(this.vector[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            var result = 0;
+            foreach (var value in this)
+            {
+                result ^= value.GetHashCode();
+            }
+            return result;
         }
 
         public override string ToString()
         {
-            return base.ToString();
+            var builder = new StringBuilder();
+            foreach (var value in this)
+            {
+                builder.Append(value);
+                builder.Append(';');
+            }
+            return builder.ToString();
         }
 
         private void ReserveIfFull()
@@ -219,7 +301,7 @@ namespace AlgorithmsCollection
                 Reserve(Capacity * 2);
             }
         }
-
+        
         private void CheckVectorEmptyThrow()
         {
             if (Empty)
@@ -233,6 +315,14 @@ namespace AlgorithmsCollection
             if (index < 0 || index >= Count)
             {
                 throw new IndexOutOfRangeException("Index is out of range");
+            }
+        }
+
+        private void CheckPredicateNullThrow(Predicate<T> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("Predicate is null");
             }
         }
     }

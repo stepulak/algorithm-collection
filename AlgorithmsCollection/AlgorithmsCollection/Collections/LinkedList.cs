@@ -280,11 +280,7 @@ namespace AlgorithmsCollection
             return list;
         }
 
-        public bool Contains(T value)
-        {
-            return Find(v => v.Equals(value)) != null;
-        }
-
+        public bool Contains(T value) => Find(v => v.Equals(value)) != null;
         public void Swap(int indexA, int indexB) => Swap(NodeAt(indexA), NodeAt(indexB));
 
         public void Swap(ReadOnlyNode nodeA, ReadOnlyNode nodeB)
