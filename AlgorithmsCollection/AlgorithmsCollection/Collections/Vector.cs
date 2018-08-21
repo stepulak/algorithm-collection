@@ -218,18 +218,18 @@ namespace AlgorithmsCollection
         
         public void Reserve(int capacity)
         {
-            if (capacity < Count)
+            if (capacity <= Count)
             {
                 Resize(capacity);
                 return;
             }
-            if (capacity <= Capacity)
+            if (vector != null && capacity <= Capacity)
             {
                 return; // Skip
             }
             var oldVector = vector;
             vector = new T[capacity];
-            oldVector.CopyTo(vector, 0);
+            oldVector?.CopyTo(vector, 0);
         }
 
         public void Swap(int index1, int index2)
