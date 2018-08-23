@@ -67,16 +67,21 @@ namespace AlgorithmsCollection
         {
             CheckIndexBoundaryThrow(index);
             ReserveIfFull();
-            vector.Skip(index).ToArray().CopyTo(vector, index + 1);
+            Array.Copy(vector.ToArray(), index, vector, index + 1, Count - index);
             vector[index] = item;
+            Count++;
         }
 
         public void InsertAfter(T item, int index)
         {
             CheckIndexBoundaryThrow(index);
             ReserveIfFull();
-            vector.Skip(index + 1).ToArray().CopyTo(vector, index + 2);
+            if (index < Count - 1)
+            {
+                Array.Copy(vector.ToArray(), index + 1, vector, index + 2, Count - index - 1);
+            }
             vector[index + 1] = item;
+            Count++;
         }
 
         public T this[int index]

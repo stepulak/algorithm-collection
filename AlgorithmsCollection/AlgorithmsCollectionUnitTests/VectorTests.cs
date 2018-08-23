@@ -106,7 +106,16 @@ namespace AlgorithmsCollectionUnitTests
         }
 
         [TestMethod]
-        public void VectorConstructorEnumerable()
+        public void VectorAdd()
+        {
+            var vector = new Vector<string>();
+            vector.Add("Hello");
+            Assert.AreEqual(vector.Front, "Hello");
+            Assert.AreEqual(vector.Count, 1);
+        }
+
+        [TestMethod]
+        public void VectorAddRange()
         {
             var vector = new Vector<int>(10);
             vector.AddRange(new LinkedList<int> { 1, 2, 3, 4, 5 });
@@ -117,6 +126,16 @@ namespace AlgorithmsCollectionUnitTests
             }
         }
 
+        [TestMethod]
+        public void VectorConstructorEnumerable()
+        {
+            var vector = new Vector<int>(new LinkedList<int> { 1, 2, 3, 4, 5 });
+            Assert.AreEqual(vector.Count, 5);
+            for (int i = 0; i < vector.Count; i++)
+            {
+                Assert.AreEqual(vector[i], i + 1);
+            }
+        }
         [TestMethod]
         public void VectorPopBack()
         {
@@ -133,6 +152,79 @@ namespace AlgorithmsCollectionUnitTests
         public void VectorPopBackOnEmpty()
         {
             var result = new Vector<int>().PopBack();
+        }
+
+        [TestMethod]
+        public void VectorInsertBefore()
+        {
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.InsertBefore(2, 0);
+            Assert.AreEqual(vector.Count, 2);
+            Assert.AreEqual(vector[0], 2);
+            Assert.AreEqual(vector[1], 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorInsertBeforeEmpty()
+        {
+            new Vector<int>().InsertBefore(1, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorInsertBeforeInvalidIndex()
+        {
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.InsertBefore(2, -1);
+        }
+
+        [TestMethod]
+        public void VectorInsertAfter()
+        {
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.PushBack(2);
+            vector.InsertAfter(3, 0);
+            Assert.AreEqual(vector.Count, 3);
+            Assert.AreEqual(vector[0], 1);
+            Assert.AreEqual(vector[1], 3);
+            Assert.AreEqual(vector[2], 2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorInsertAfterInvalidIndex()
+        {
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.InsertAfter(2, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorInsertAfterEmpty()
+        {
+            new Vector<int>().InsertAfter(1, 0);
+        }
+
+        [TestMethod]
+        public void VectorInsertBeforeAfterAdvanced()
+        {
+
+        }
+
+        [TestMethod]
+        public void VectorClear()
+        {
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.PushBack(2);
+            vector.Clear();
+            Assert.AreEqual(vector.Count, 0);
+            Assert.IsTrue(vector.Capacity > 0);
         }
 
         [TestMethod]
@@ -165,24 +257,60 @@ namespace AlgorithmsCollectionUnitTests
             vector.PushBack(3);
             vector.Resize(10);
             Assert.AreEqual(vector.Count, 10);
+            Assert.AreEqual(vector.Capacity, 10);
             Assert.AreEqual(vector[0], 1);
             Assert.AreEqual(vector[1], 2);
             Assert.AreEqual(vector[2], 3);
-
+            var result = vector[3]; // shouldn't throw an exception
         }
 
         [TestMethod]
         public void VectorResizeShrink()
         {
             var vector = new Vector<int>();
-
+            for (int i = 0; i < 4; i++)
+            {
+                vector.PushBack(i + 1);
+            }
+            vector.Resize(2);
+            Assert.AreEqual(vector.Count, 2);
+            Assert.AreEqual(vector.Capacity, 2);
+            Assert.AreEqual(vector[0], 1);
+            Assert.AreEqual(vector[1], 2);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void VectorResizeZeroSize()
         {
-
+            var vector = new Vector<int>();
+            vector.Resize(0);
         }
+
+        [TestMethod]
+        public void VectorShrinkToFit()
+        {
+            var vector = new Vector<int>();
+            for (int i = 0; i < 4; i++)
+            {
+                vector.PushBack(i + 1);
+            }
+            vector.ShrinkToFit();
+            Assert.AreEqual(vector.Count, 4);
+            Assert.AreEqual(vector.Capacity, 4);
+            for (int i = 0; i < 4; i++)
+            {
+                Assert.AreEqual(vector[i], i + 1);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void VectorShrinkToFitWhenEmpty()
+        {
+            new Vector<int>().ShrinkToFit();
+        }
+
 
     }
 }
