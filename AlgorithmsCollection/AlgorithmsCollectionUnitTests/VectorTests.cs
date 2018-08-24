@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AlgorithmsCollection;
 
@@ -118,7 +120,7 @@ namespace AlgorithmsCollectionUnitTests
         public void VectorAddRange()
         {
             var vector = new Vector<int>(10);
-            vector.AddRange(new LinkedList<int> { 1, 2, 3, 4, 5 });
+            vector.AddRange(new List<int> { 1, 2, 3, 4, 5 });
             Assert.AreEqual(vector.Count, 5);
             for (int i = 0; i < vector.Count; i++)
             {
@@ -129,7 +131,7 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void VectorConstructorEnumerable()
         {
-            var vector = new Vector<int>(new LinkedList<int> { 1, 2, 3, 4, 5 });
+            var vector = new Vector<int>(new List<int> { 1, 2, 3, 4, 5 });
             Assert.AreEqual(vector.Count, 5);
             for (int i = 0; i < vector.Count; i++)
             {
@@ -213,7 +215,20 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void VectorInsertBeforeAfterAdvanced()
         {
-
+            var vector = new Vector<int>();
+            vector.PushBack(1);
+            vector.InsertBefore(2, 0);
+            vector.InsertBefore(3, 0);
+            vector.InsertAfter(4, 1);
+            vector.InsertAfter(5, 0);
+            vector.InsertBefore(6, 4);
+            Assert.AreEqual(vector.Count, 6);
+            Assert.AreEqual(vector[0], 3);
+            Assert.AreEqual(vector[1], 5);
+            Assert.AreEqual(vector[2], 2);
+            Assert.AreEqual(vector[3], 4);
+            Assert.AreEqual(vector[4], 6);
+            Assert.AreEqual(vector[5], 1);
         }
 
         [TestMethod]
@@ -225,6 +240,104 @@ namespace AlgorithmsCollectionUnitTests
             vector.Clear();
             Assert.AreEqual(vector.Count, 0);
             Assert.IsTrue(vector.Capacity > 0);
+        }
+
+        [TestMethod]
+        public void VectorContains()
+        {
+            var vector = new Vector<string> { "A", "B", "C", "D" };
+            Assert.IsTrue(vector.Contains("A"));
+            Assert.IsTrue(vector.Contains("D"));
+            Assert.IsFalse(vector.Contains("E"));
+        }
+
+        [TestMethod]
+        public void VectorCopyTo()
+        {
+            var vector = new Vector<int> { 1, 2, 3, 4 };
+            var array = new int[5];
+            vector.CopyTo(array, 1);
+            for (int i = 1; i < 5; i++)
+            {
+                Assert.AreEqual(array[i], i);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void VectorCopyToArrayNull()
+        {
+            new Vector<int>().CopyTo(null, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void VectorCopyToArrayIndexNegative()
+        {
+            var array = new int[0];
+            new Vector<int>().CopyTo(array, -1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void VectorCopyToArrayTooSmall()
+        {
+            var vector = new Vector<int> { 1, 2, 3, 4 };
+            var array = new int[3];
+            vector.CopyTo(array, 0);
+        }
+        
+        [TestMethod]
+        public void VectorFind()
+        {
+            var vector = new Vector<int> { 1, 2, 3, 4 };
+            Assert.AreEqual(vector.Find(v => v > 2 && v < 4), 3);
+            Assert.AreEqual(vector.Find(v => v > 5), default(int));
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void VectorFindNullPredicate()
+        {
+            var result = new Vector<int>().Find(null);
+        }
+
+        [TestMethod]
+        public void VectorFindAll()
+        {
+            var vector = new Vector<int> { 1, 2, 3, 4, 5 };
+            Assert.IsTrue(vector.FindAll(v => v > 2 && v < 6).SequenceEqual(new List<int> { 3, 4, 5 }));
+            Assert.AreEqual(vector.FindAll(v => v > 7).Count, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void VectorFindAllNullPredicate()
+        {
+            var result = new Vector<int>().Find(null);
+        }
+
+        [TestMethod]
+        public void VectorFindIndex()
+        {
+            var vector = new Vector<string> { "Abc", "aBc", "abC" };
+            Assert.AreEqual(vector.FindIndex("aBc"), 1);
+            Assert.AreEqual(vector.FindIndex("AAB"), -1);
+        }
+
+        [TestMethod]
+        public void VectorFindAllIndices()
+        {
+            var vector = new Vector<char> { 'a', 'b', 'c', 'd' };
+            Assert.IsTrue(vector.FindAllIndices(v => v == 'a' || v == 'b').SequenceEqual(new List<int> { 0, 1 }));
+            Assert.AreEqual(vector.FindAllIndices(v => v > 'e').Count, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void VectorFindAllIndicesNullPredicate()
+        {
+            new Vector<int>().FindAllIndices(null);
         }
 
         [TestMethod]

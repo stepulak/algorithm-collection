@@ -67,7 +67,7 @@ namespace AlgorithmsCollection
         {
             CheckIndexBoundaryThrow(index);
             ReserveIfFull();
-            Array.Copy(vector.ToArray(), index, vector, index + 1, Count - index);
+            VectorMoveForwardOneStep(index, 0);
             vector[index] = item;
             Count++;
         }
@@ -78,7 +78,7 @@ namespace AlgorithmsCollection
             ReserveIfFull();
             if (index < Count - 1)
             {
-                Array.Copy(vector.ToArray(), index + 1, vector, index + 2, Count - index - 1);
+                VectorMoveForwardOneStep(index, 1);
             }
             vector[index + 1] = item;
             Count++;
@@ -135,7 +135,7 @@ namespace AlgorithmsCollection
             {
                 throw new ArgumentException("Not enough space in array");
             }
-            throw new NotImplementedException();
+            Array.Copy(vector, 0, array, arrayIndex, Count);
         }
 
         public bool Remove(T item)
@@ -304,6 +304,17 @@ namespace AlgorithmsCollection
             if (Count >= Capacity)
             {
                 Reserve(Capacity * 2);
+            }
+        }
+
+        private void VectorMoveForwardOneStep(int index, int offset)
+        {
+            // Equal to:
+            // Array.Copy(vector.ToArray(), index + offset, vector, index + 1 + offset, Count - index - offset);
+            // But should be faster, doesn't need deep vector's copy for forward copying...
+            for (int i = Count; i > index + offset; i--)
+            {
+                vector[i] = vector[i - 1];
             }
         }
         
