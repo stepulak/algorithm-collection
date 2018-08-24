@@ -288,6 +288,53 @@ namespace AlgorithmsCollectionUnitTests
         }
         
         [TestMethod]
+        public void VectorRemove()
+        {
+            var vector = new Vector<string> { "Hello", "World", "Vector" };
+            Assert.IsTrue(vector.Remove("Hello"));
+            Assert.IsFalse(vector.Remove("world"));
+            Assert.AreEqual(vector.Count, 2);
+            Assert.AreEqual(vector[0], "World");
+            Assert.AreEqual(vector[1], "Vector");
+        }
+
+        [TestMethod]
+        public void VectorRemoveAt()
+        {
+            var vector = new Vector<int> { 1, 2, 3 };
+            vector.RemoveAt(1);
+            Assert.AreEqual(vector.Count, 2);
+            Assert.AreEqual(vector[0], 1);
+            Assert.AreEqual(vector[1], 3);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorRemoveAtInvalidIndex()
+        {
+            new Vector<int> { 1, 2, 3 }.RemoveAt(3);
+        }
+
+        [TestMethod]
+        public void VectorRemoveAll()
+        {
+            var vector = new Vector<int>(Enumerable.Range(1, 10));
+            vector.RemoveAll(v => v % 2 == 1);
+            Assert.AreEqual(vector.Count, 5);
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.AreEqual(vector[i], (i + 1) * 2);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void VectorRemoveAllNullPredicate()
+        {
+            new Vector<int>().RemoveAll(null);
+        }
+
+        [TestMethod]
         public void VectorFind()
         {
             var vector = new Vector<int> { 1, 2, 3, 4 };
@@ -351,6 +398,14 @@ namespace AlgorithmsCollectionUnitTests
             Assert.AreEqual(vector.Capacity, 100);
             Assert.AreEqual(vector.Front, 1);
             Assert.AreEqual(vector.Back, 2);
+        }
+
+        [TestMethod]
+        public void VectorReserveLessThanCurrent()
+        {
+            var vector = new Vector<int>(10);
+            vector.Reserve(5);
+            Assert.AreEqual(vector.Capacity, 10);
         }
 
         [TestMethod]
@@ -424,6 +479,72 @@ namespace AlgorithmsCollectionUnitTests
             new Vector<int>().ShrinkToFit();
         }
 
+        [TestMethod]
+        public void VectorSwapElements()
+        {
+            var vector = new Vector<int> { 1, 2, 3 };
+            vector.Swap(0, 2);
+            Assert.AreEqual(vector[0], 3);
+            Assert.AreEqual(vector[1], 2);
+            Assert.AreEqual(vector[2], 1);
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorSwapElementsInvalidIndexLeft()
+        {
+            var vector = new Vector<int> { 1, 2, 3 };
+            vector.Swap(-1, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void VectorSwapElementsInvalidIndexRight()
+        {
+            var vector = new Vector<int> { 1, 2, 3 };
+            vector.Swap(0, 3);
+        }
+
+        [TestMethod]
+        public void VectorEnumerator()
+        {
+            var vector = new Vector<int> { 1, 2, 3, 4 };
+            int counter = 0;
+            foreach (var value in vector)
+            {
+                Assert.AreEqual(value, ++counter);
+            }
+        }
+
+        [TestMethod]
+        public void VectorEquals()
+        {
+            var vector1 = new Vector<int>();
+            var vector2 = new Vector<int> { 1, 2 };
+            var vector3 = new Vector<string> { "Hello" };
+            Assert.IsTrue(vector2.Equals(vector2));
+            Assert.IsFalse(vector2.Equals(vector1));
+            Assert.IsFalse(vector2.Equals(vector3));
+            Assert.IsTrue(vector1.Equals(new Vector<int>()));
+        }
+
+        [TestMethod]
+        public void VectorHashCode()
+        {
+            var vector1 = new Vector<int> { 1, 2, 3 };
+            var vector2 = new Vector<int> { 1, 2 };
+            var vector3 = new Vector<string> { "Hello" };
+            Assert.AreNotEqual(vector1.GetHashCode(), vector2.GetHashCode());
+            Assert.AreNotEqual(vector1.GetHashCode(), vector3.GetHashCode());
+            vector1.PopBack();
+            Assert.AreEqual(vector1.GetHashCode(), vector2.GetHashCode());
+        }
+
+        [TestMethod]
+        public void VectorToString()
+        {
+            var vector = new Vector<int> { 1, 2, 3 };
+            Assert.AreEqual(vector.ToString(), "1;2;3;");
+        }
     }
 }

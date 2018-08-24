@@ -10,6 +10,9 @@ I (the author) do this library just for fun and personal use.
 
 * Binary Heap
 * (Double) Linked List
+* Vector (C++ STL equivalent)
+* HashTable
+* CircularQueue
 * Graph representation and algorithms
 	* Dijkstra
 	* Bellman-Ford
@@ -61,12 +64,9 @@ and many more...
 
 ## Still under development
 
-* B+ tree
-* RedBlack tree
-* Hash table
-* Vector (C++ STL equivalent)
+* B tree
 * Polynomial codes
 
-and many more is comming...
+and more is comming...
 
 Each class and method contains equivalent set of Unit tests, but if you find a bug, feel free to pull a request!

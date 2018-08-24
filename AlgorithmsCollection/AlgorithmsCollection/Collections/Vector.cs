@@ -156,12 +156,19 @@ namespace AlgorithmsCollection
             {
                 vector.Skip(index + 1).ToArray().CopyTo(vector, index);
             }
+            Count--;
         }
 
         public void RemoveAll(Predicate<T> predicate)
         {
             var indices = FindAllIndices(predicate);
-            indices.ForEach(index => RemoveAt(index));
+            var counter = 0;
+            foreach (var index in indices)
+            {
+                var i = index - counter;
+                RemoveAt(index - counter);
+                counter++; // Vector shrinks in each step of removing
+            }
         }
 
         public T Find(Predicate<T> predicate)

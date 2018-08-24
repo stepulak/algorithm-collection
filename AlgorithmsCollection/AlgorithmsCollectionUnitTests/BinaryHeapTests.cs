@@ -138,7 +138,6 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void BinaryHeapEnumerate()
         {
-            // Very necessary test :-D...
             var values = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             var heap = new BinaryHeap<int>(Comparer<int>.Default, values);
             foreach(var value in heap)
@@ -154,12 +153,26 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void BinaryHeapEquals()
         {
-            var heap1 = new BinaryHeap<int>(Comparer<int>.Default, new List<int> { 1, 2, 3, 4, 5, 6 });
-            var heap2 = new BinaryHeap<int>(Comparer<int>.Default, new List<int> { 6, 5, 4, 3, 2, 1 });
+            var heap1 = new BinaryHeap<int>(Comparer<int>.Default, Enumerable.Range(1, 6));
+            var heap2 = new BinaryHeap<int>(Comparer<int>.Default, Enumerable.Range(1, 6).Reverse());
             Assert.IsTrue(heap1.Equals(heap2));
             Assert.IsFalse(heap1.Equals(heap2.Reverse()));
+        }
+
+        [TestMethod]
+        public void BinaryHeapHashCode()
+        {
+            var heap1 = new BinaryHeap<int>(Comparer<int>.Default, Enumerable.Range(1, 6));
+            var heap2 = new BinaryHeap<int>(Comparer<int>.Default, Enumerable.Range(1, 6).Reverse());
             Assert.AreEqual(heap1.GetHashCode(), heap2.GetHashCode());
             Assert.AreNotEqual(heap1.GetHashCode(), heap2.Reverse().GetHashCode());
+        }
+
+        [TestMethod]
+        public void BinaryHeapToString()
+        {
+            var heap = new BinaryHeap<int>(Comparer<int>.Default, Enumerable.Range(1, 6));
+            Assert.AreEqual(heap.ToString(), "1;2;3;4;5;6;");
         }
 
         [TestMethod]
