@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Collections\BinaryHeap.cs" />
     <Compile Include="Collections\CircularQueue.cs" />
+    <Compile Include="Collections\SplayTree.cs" />
     <Compile Include="Graph\Graph.cs" />
     <Compile Include="Collections\HashTable.cs" />
     <Compile Include="Collections\LinkedList.cs" />
