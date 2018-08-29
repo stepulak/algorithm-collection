@@ -43,7 +43,7 @@ namespace AlgorithmsCollection
 
         public static implicit operator T(Optional<T> opt) => opt.Value;
         public static implicit operator Optional<T>(T value) => new Optional<T>(value);
-
+        
         public override bool Equals(object obj)
         {
             if (obj is Optional<T> opt)
