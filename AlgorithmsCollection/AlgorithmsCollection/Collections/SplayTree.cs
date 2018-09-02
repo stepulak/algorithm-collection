@@ -73,10 +73,15 @@ namespace AlgorithmsCollection
         public ReadOnlyNode? Find(Key key)
         {
             Node parentNode = null;
-            return ReadOnlyNode.Create(FindImplementation(key, root, ref parentNode));
+            var node = FindNodeImpl(key, root, ref parentNode);
+            if (node != null)
+            {
+                Splay(node);
+            }
+            return ReadOnlyNode.Create(node);
         }
         
-        public ReadOnlyNode Insert(Key key, Value value)
+        public ReadOnlyNode Add(Key key, Value value)
         {
             if (root == null)
             {
@@ -85,7 +90,7 @@ namespace AlgorithmsCollection
                 return ReadOnlyNode.Create(root).Value;
             }
             Node parentNode = null;
-            var node = FindImplementation(key, root, ref parentNode);
+            var node = FindNodeImpl(key, root, ref parentNode);
             if (node != null) // Key-Value already present, just overwrite current value
             {
                 node.Value = value;
@@ -106,7 +111,10 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node).Value;
         }
 
-        public void Add(KeyValuePair<Key, Value> item) => Insert(item.Key, item.Value);
+        public void Add(KeyValuePair<Key, Value> item) => Add(item.Key, item.Value);
+
+        public bool Remove(Key key) => RemoveImpl(key, null);
+        public bool Remove(KeyValuePair<Key, Value> item) => RemoveImpl(item.Key, item.Value);
 
         public void Clear()
         {
@@ -118,16 +126,11 @@ namespace AlgorithmsCollection
         public bool Contains(KeyValuePair<Key, Value> item)
         {
             Node parentNode = null;
-            var result = FindImplementation(item.Key, root, ref parentNode);
+            var result = FindNodeImpl(item.Key, root, ref parentNode);
             return result != null && result.Value.Equals(item.Value);
         }
 
         public void CopyTo(KeyValuePair<Key, Value>[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Remove(KeyValuePair<Key, Value> item)
         {
             throw new NotImplementedException();
         }
@@ -142,6 +145,8 @@ namespace AlgorithmsCollection
             throw new NotImplementedException();
         }
 
+        private Node MostLeftNode(Node node) => node.Left != null ? MostLeftNode(node.Left) : node;
+
         private void LeftRotation(Node node)
         {
             if (node.Parent == null)
@@ -149,9 +154,13 @@ namespace AlgorithmsCollection
                 throw new InvalidOperationException("Unable to perform left rotation on node with no parent");
             }
             var parent = node.Parent;
-            var nodeLeft = node.Right;
+            var nodeLeft = node.Left;
             node.Left = parent;
             parent.Right = nodeLeft;
+            if (nodeLeft != null)
+            {
+                nodeLeft.Parent = parent;
+            }
             SwapGrandparent(node, parent);
         }
 
@@ -165,12 +174,16 @@ namespace AlgorithmsCollection
             var nodeRight = node.Right;
             node.Right = parent;
             parent.Left = nodeRight;
+            if (nodeRight != null)
+            {
+                nodeRight.Parent = parent;
+            }
             SwapGrandparent(node, parent);
         }
 
         private void SwapGrandparent(Node node, Node parent)
         {
-            var grandParent = parent.GrandParent;
+            var grandParent = parent.Parent;
             node.Parent = grandParent;
             if (grandParent != null)
             {
@@ -214,7 +227,7 @@ namespace AlgorithmsCollection
                 else if (!node.IsLeftChild && !parent.IsLeftChild) // Zig-zig step
                 {
                     LeftRotation(parent);
-                    RightRotation(node);
+                    LeftRotation(node);
                 }
                 else if (node.IsLeftChild && !parent.IsLeftChild) // Zig-zag step
                 {
@@ -229,7 +242,7 @@ namespace AlgorithmsCollection
             }
         }
 
-        private Node FindImplementation(Key key, Node node, ref Node resultNodeParent)
+        private Node FindNodeImpl(Key key, Node node, ref Node resultNodeParent)
         {
             if (node == null)
             {
@@ -241,7 +254,22 @@ namespace AlgorithmsCollection
                 return node;
             }
             resultNodeParent = node; // Set parent, we continue searching
-            return FindImplementation(key, cmpResult < 0 ? node.Left : node.Right, ref resultNodeParent);
+            return FindNodeImpl(key, cmpResult < 0 ? node.Left : node.Right, ref resultNodeParent);
         }
+
+        private bool RemoveImpl(Key key, Optional<Value> value)
+        {
+            Node resultParent = null;
+            var node = FindNodeImpl(key, root, ref resultParent);
+            if (node == null || (value != null && value.HasValue && !node.Value.Equals(value.Value)))
+            {
+                return false;
+            }
+            
+
+            return true;
+        }
+
+        private void 
     }
 }
