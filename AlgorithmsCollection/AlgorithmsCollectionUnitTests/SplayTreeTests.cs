@@ -103,10 +103,12 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void SplayTreeFind()
         {
-            var tree = new SplayTree<int, int>();
-            tree.Add(1, 1);
-            tree.Add(2, 2);
-            tree.Add(3, 3);
+            var tree = new SplayTree<int, int>
+            {
+                { 1, 1 },
+                { 2, 2 },
+                { 3, 3 }
+            };
             var node = tree.Find(2);
             Assert.AreEqual(tree.Count, 3);
             Assert.IsTrue(tree.Root.HasValue);
@@ -119,6 +121,44 @@ namespace AlgorithmsCollectionUnitTests
             Assert.IsTrue(node.Value.Right.HasValue);
             Assert.AreEqual(node.Value.Left.Value.Value, 1);
             Assert.AreEqual(node.Value.Right.Value.Value, 3);
+        }
+
+        [TestMethod]
+        public void SplayTreeRemoveOneValue()
+        {
+            var tree = new SplayTree<int, int>
+            {
+                { 1, 1 }
+            };
+            Assert.IsTrue(tree.Remove(1));
+            Assert.AreEqual(tree.Count, 0);
+            Assert.IsFalse(tree.Root.HasValue);
+            Assert.IsFalse(tree.Remove(0));
+        }
+
+        [TestMethod]
+        public void SplayTreeRemoveThreeValues()
+        {
+            var tree = new SplayTree<int, string>
+            {
+                { 1, "1" },
+                { 2, "2" },
+                { 3, "3" }
+            };
+            Assert.IsTrue(tree.Remove(2));
+            Assert.AreEqual(tree.Count, 2);
+            Assert.IsTrue(tree.Root.HasValue);
+            var root = tree.Root.Value;
+            Assert.AreEqual(root.Value, "1");
+            Assert.IsFalse(root.Parent.HasValue);
+            Assert.IsTrue(root.Right.HasValue);
+            Assert.IsFalse(root.Left.HasValue);
+            var right = root.Right.Value;
+            Assert.AreEqual(right.Value, "3");
+            Assert.IsTrue(right.Parent.HasValue);
+            Assert.AreEqual(right.Parent.Value.Value, "1");
+            Assert.IsFalse(right.Left.HasValue);
+            Assert.IsFalse(right.Right.HasValue);
         }
     }
 }

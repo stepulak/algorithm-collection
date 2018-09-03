@@ -146,6 +146,7 @@ namespace AlgorithmsCollection
         }
 
         private Node MostLeftNode(Node node) => node.Left != null ? MostLeftNode(node.Left) : node;
+        private Node MostRightNode(Node node) => node.Right != null ? MostRightNode(node.Right) : node;
 
         private void LeftRotation(Node node)
         {
@@ -265,11 +266,39 @@ namespace AlgorithmsCollection
             {
                 return false;
             }
-            
-
+            Splay(node);
+            var left = node.Left;
+            var right = node.Right;
+            if (left != null)
+            {
+                left.Parent = null;
+                if (left.Right != null)
+                {
+                    var max = MostRightNode(left.Right);
+                    Splay(max);
+                    root = max;
+                }
+                else
+                {
+                    root = left;
+                }
+                if (right != null)
+                {
+                    root.Right = right;
+                    right.Parent = root;
+                }
+            }
+            else if (right != null)
+            {
+                root = right;
+                root.Parent = null;
+            }
+            else
+            {
+                root = null;
+            }
+            Count--;
             return true;
         }
-
-        private void 
     }
 }
