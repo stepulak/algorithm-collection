@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AlgorithmsCollection;
 
@@ -124,7 +125,7 @@ namespace AlgorithmsCollectionUnitTests
         }
 
         [TestMethod]
-        public void SplayTreeRemoveOneValue()
+        public void SplayTreeRemoveSimpleTree()
         {
             var tree = new SplayTree<int, int>
             {
@@ -137,7 +138,7 @@ namespace AlgorithmsCollectionUnitTests
         }
 
         [TestMethod]
-        public void SplayTreeRemoveThreeValues()
+        public void SplayTreeRemoveMediumTree()
         {
             var tree = new SplayTree<int, string>
             {
@@ -157,6 +158,47 @@ namespace AlgorithmsCollectionUnitTests
             Assert.AreEqual(right.Value, "3");
             Assert.IsTrue(right.Parent.HasValue);
             Assert.AreEqual(right.Parent.Value.Value, "1");
+            Assert.IsFalse(right.Left.HasValue);
+            Assert.IsFalse(right.Right.HasValue);
+        }
+
+        [TestMethod]
+        public void SplayTreeRemoveLargeTree()
+        {
+            var tree = new SplayTree<int, int>()
+            {
+                { 1, 1 },
+                { 2, 2 },
+                { 6, 6 },
+                { 8, 8 },
+                { 5, 5 },
+                { 4, 4 }
+            };
+            Assert.IsTrue(tree.Remove(new KeyValuePair<int, int>(8, 8)));
+            Assert.IsTrue(tree.Remove(new KeyValuePair<int, int>(1, 1)));
+            Assert.AreEqual(tree.Count, 4);
+            Assert.IsTrue(tree.Root.HasValue);
+            var root = tree.Root.Value;
+            Assert.AreEqual(root.Value, 5);
+            Assert.IsFalse(root.Parent.HasValue);
+            Assert.IsTrue(root.Left.HasValue);
+            Assert.IsTrue(root.Right.HasValue);
+            var left = root.Left.Value;
+            Assert.AreEqual(left.Value, 2);
+            Assert.IsTrue(left.Parent.HasValue);
+            Assert.AreEqual(left.Parent.Value.Value, 5);
+            Assert.IsFalse(left.Left.HasValue);
+            Assert.IsTrue(left.Right.HasValue);
+            var leftRight = left.Right.Value;
+            Assert.AreEqual(leftRight.Value, 4);
+            Assert.IsTrue(leftRight.Parent.HasValue);
+            Assert.AreEqual(leftRight.Parent.Value.Value, 2);
+            Assert.IsFalse(leftRight.Left.HasValue);
+            Assert.IsFalse(leftRight.Right.HasValue);
+            var right = root.Right.Value;
+            Assert.AreEqual(right.Value, 6);
+            Assert.IsTrue(right.Parent.HasValue);
+            Assert.AreEqual(right.Parent.Value.Value, 5);
             Assert.IsFalse(right.Left.HasValue);
             Assert.IsFalse(right.Right.HasValue);
         }
