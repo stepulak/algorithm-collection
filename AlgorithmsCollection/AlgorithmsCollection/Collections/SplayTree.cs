@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
-    public class SplayTree<Key, Value> : ICollection<KeyValuePair<Key, Value>>
+    public class SplayTree<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>
     {
         private class Node
         {
             public Node Parent { get; set; }
             public Node Left { get; set; } = null;
             public Node Right { get; set; } = null;
-            public Key Key { get; set; }
-            public Value Value { get; set; }
+            public TKey Key { get; set; }
+            public TValue Value { get; set; }
             public Node GrandParent => Parent?.Parent;
             public bool IsLeftChild => Parent?.Left == this;
 
-            public Node(Key key, Value value, Node parent)
+            public Node(TKey key, TValue value, Node parent)
             {
                 Key = key;
                 Value = value;
@@ -34,8 +34,8 @@ namespace AlgorithmsCollection
             public ReadOnlyNode? Parent => Create(node.Parent);
             public ReadOnlyNode? Left => Create(node.Left);
             public ReadOnlyNode? Right => Create(node.Right);
-            public Key Key => node.Key;
-            public Value Value
+            public TKey Key => node.Key;
+            public TValue Value
             {
                 get
                 {
@@ -59,9 +59,9 @@ namespace AlgorithmsCollection
         }
 
         private Node root = null;
-        private static IComparer<Key> DefaultKeyComparer = Comparer<Key>.Default;
+        private static IComparer<TKey> DefaultKeyComparer = Comparer<TKey>.Default;
 
-        public IComparer<Key> KeyComparer { get; private set; } = DefaultKeyComparer;
+        public IComparer<TKey> KeyComparer { get; private set; } = DefaultKeyComparer;
         public bool IsReadOnly => false;
         public ReadOnlyNode? Root => ReadOnlyNode.Create(root);
         public int Count { get; private set; } = 0;
@@ -70,7 +70,24 @@ namespace AlgorithmsCollection
         {
         }
 
-        public ReadOnlyNode? Find(Key key)
+        public SplayTree(IComparer<TKey> keyComparer)
+        {
+            KeyComparer = keyComparer ?? throw new ArgumentNullException("KeyComparer is null");
+        }
+
+        public SplayTree(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
+        {
+            if (enumerable == null)
+            {
+                throw new ArgumentNullException("Enumerable is null");
+            }
+            foreach (var pair in enumerable)
+            {
+                Add(pair);
+            }
+        }
+
+        public ReadOnlyNode? Find(TKey key)
         {
             Node parentNode = null;
             var node = FindNodeImpl(key, root, ref parentNode);
@@ -81,7 +98,7 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node);
         }
         
-        public ReadOnlyNode Add(Key key, Value value)
+        public ReadOnlyNode Add(TKey key, TValue value)
         {
             if (root == null)
             {
@@ -111,39 +128,57 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node).Value;
         }
 
-        public void Add(KeyValuePair<Key, Value> item) => Add(item.Key, item.Value);
-
-        public bool Remove(Key key) => RemoveImpl(key, null);
-        public bool Remove(KeyValuePair<Key, Value> item) => RemoveImpl(item.Key, item.Value);
+        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+        
+        public bool Remove(TKey key) => RemoveImpl(key, null);
+        public bool Remove(KeyValuePair<TKey, TValue> item) => RemoveImpl(item.Key, item.Value);
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            root = null;
+            Count = 0;
         }
 
-        public bool ContainsKey(Key key) => Find(key).HasValue;
+        public bool ContainsKey(TKey key) => Find(key).HasValue;
 
-        public bool Contains(KeyValuePair<Key, Value> item)
+        public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             Node parentNode = null;
             var result = FindNodeImpl(item.Key, root, ref parentNode);
             return result != null && result.Value.Equals(item.Value);
         }
 
-        public void CopyTo(KeyValuePair<Key, Value>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array == null)
+            {
+                throw new ArgumentNullException("Array is null");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("ArrayIndex is less than zero");
+            }
+            if (array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException("Not enough space in array");
+            }
+            foreach (var pair in this)
+            {
+                array[arrayIndex++] = pair;
+            }
         }
 
-        public IEnumerator<KeyValuePair<Key, Value>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            var elements = new List<KeyValuePair<TKey, TValue>>();
+            if (root != null)
+            {
+                FetchElementsRecursive(root, elements);
+            }
+            return elements.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private Node MostLeftNode(Node node) => node.Left != null ? MostLeftNode(node.Left) : node;
         private Node MostRightNode(Node node) => node.Right != null ? MostRightNode(node.Right) : node;
@@ -243,7 +278,7 @@ namespace AlgorithmsCollection
             }
         }
 
-        private Node FindNodeImpl(Key key, Node node, ref Node resultNodeParent)
+        private Node FindNodeImpl(TKey key, Node node, ref Node resultNodeParent)
         {
             if (node == null)
             {
@@ -258,7 +293,7 @@ namespace AlgorithmsCollection
             return FindNodeImpl(key, cmpResult < 0 ? node.Left : node.Right, ref resultNodeParent);
         }
 
-        private bool RemoveImpl(Key key, Optional<Value> value)
+        private bool RemoveImpl(TKey key, Optional<TValue> value)
         {
             Node resultParent = null;
             var node = FindNodeImpl(key, root, ref resultParent);
@@ -299,6 +334,19 @@ namespace AlgorithmsCollection
             }
             Count--;
             return true;
+        }
+
+        private void FetchElementsRecursive(Node node, List<KeyValuePair<TKey, TValue>> elements)
+        {
+            if (node.Left != null)
+            {
+                FetchElementsRecursive(node.Left, elements);
+            }
+            elements.Add(new KeyValuePair<TKey, TValue>(node.Key, node.Value));
+            if (node.Right != null)
+            {
+                FetchElementsRecursive(node.Right, elements);
+            }
         }
     }
 }

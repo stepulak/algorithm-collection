@@ -9,6 +9,15 @@ namespace AlgorithmsCollectionUnitTests
     public class SplayTreeTests
     {
         [TestMethod]
+        public void SplayTreeConstructorEmpty()
+        {
+            var tree = new SplayTree<string, bool>();
+            Assert.AreEqual(tree.Count, 0);
+            Assert.IsFalse(tree.Root.HasValue);
+            Assert.IsNotNull(tree.KeyComparer);
+        }
+        
+        [TestMethod]
         public void SplayTreeAddOneValue()
         {
             var tree = new SplayTree<string, int>();
@@ -100,15 +109,60 @@ namespace AlgorithmsCollectionUnitTests
             Assert.IsFalse(leftRightLeft.Right.HasValue);
             Assert.IsFalse(leftRightLeft.Left.HasValue);
         }
+        
+        [TestMethod]
+        public void SplayTreeConstructorWithKeyComparer()
+        {
+            var tree = new SplayTree<double, int>(NumericUtilities.FloatNumberComparer<double>());
+            tree.Add(0.0000001, 0);
+            var node = tree.Find(0.000001);
+            Assert.IsTrue(node.HasValue);
+            Assert.AreEqual(node.Value.Value, 0);
+            tree.Add(0.00000012, 1); // Should overwrite previous inserted value
+            node = tree.Find(0.00000012);
+            Assert.IsTrue(node.HasValue);
+            Assert.AreEqual(node.Value.Value, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SplayTreeConstructorWithNullKeyComparer()
+        {
+            new SplayTree<int, int>((IComparer<int>)null);
+        }
+
+        [TestMethod]
+        public void SplayTreeConstructorEnumerable()
+        {
+            var list = new List<KeyValuePair<int, int>>
+            {
+                new KeyValuePair<int, int>(1, 1),
+                new KeyValuePair<int, int>(2, 2)
+            };
+            var tree = new SplayTree<int, int>(list);
+            Assert.AreEqual(tree.Count, 2);
+            Assert.IsTrue(tree.Root.HasValue);
+            var root = tree.Root.Value;
+            Assert.AreEqual(root.Value, 2);
+            Assert.IsTrue(root.Left.HasValue);
+            Assert.AreEqual(root.Left.Value.Value, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SplayTreeConstructorWithNullEnumerable()
+        {
+            new SplayTree<int, int>((IEnumerable<KeyValuePair<int, int>>)null);
+        }
 
         [TestMethod]
         public void SplayTreeFind()
         {
             var tree = new SplayTree<int, int>
             {
-                { 1, 1 },
-                { 2, 2 },
-                { 3, 3 }
+                new KeyValuePair<int, int>(1, 1),
+                new KeyValuePair<int, int>(2, 2),
+                new KeyValuePair<int, int>(3, 3)
             };
             var node = tree.Find(2);
             Assert.AreEqual(tree.Count, 3);
@@ -201,6 +255,51 @@ namespace AlgorithmsCollectionUnitTests
             Assert.AreEqual(right.Parent.Value.Value, 5);
             Assert.IsFalse(right.Left.HasValue);
             Assert.IsFalse(right.Right.HasValue);
+        }
+
+        [TestMethod]
+        public void SplayTreeClear()
+        {
+            var tree = new SplayTree<string, string>
+            {
+                { "Hello", "qwerty" },
+                { "World", "uiop" }
+            };
+            tree.Clear();
+            Assert.AreEqual(tree.Count, 0);
+            Assert.IsFalse(tree.Root.HasValue);
+        }
+
+        [TestMethod]
+        public void SplayTreeContainsKey()
+        {
+            var tree = new SplayTree<int, int>()
+            {
+                { 1, 1 },
+                { 2, 2 },
+                { -1, -1 },
+                { -2, -2 },
+                { 3, 3 }
+            };
+            Assert.IsTrue(tree.ContainsKey(1));
+            Assert.IsTrue(tree.ContainsKey(-1));
+            Assert.IsFalse(tree.ContainsKey(-3));
+        }
+
+        [TestMethod]
+        public void SplayTreeContains()
+        {
+            var tree = new SplayTree<int, int>()
+            {
+                { 1, 1 },
+                { 2, 2 },
+                { -1, -1 },
+                { -2, -2 },
+                { 3, 3 }
+            };
+            Assert.IsTrue(tree.Contains(new KeyValuePair<int, int>(1, 1)));
+            Assert.IsFalse(tree.Contains(new KeyValuePair<int, int>(-1, 1)));
+            Assert.IsFalse(tree.Contains(new KeyValuePair<int, int>(3, 2)));
         }
     }
 }
