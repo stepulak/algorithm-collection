@@ -26,7 +26,7 @@ namespace AlgorithmsCollection
                 Parent = parent;
             }
         }
-        
+
         public struct ReadOnlyNode
         {
             private Node node;
@@ -56,6 +56,12 @@ namespace AlgorithmsCollection
                 }
                 return null;
             }
+        }
+
+        private struct FindNodeResult
+        {
+            public Node Node { get; set; }
+            public Node ParentNode { get; set; }
         }
 
         private Node root = null;
@@ -89,45 +95,35 @@ namespace AlgorithmsCollection
 
         public ReadOnlyNode? Find(TKey key)
         {
-            Node parentNode = null;
-            var node = FindNodeImpl(key, root, ref parentNode);
-            if (node != null)
+            var result = FindNodeImpl(key);
+            if (result.Node != null)
             {
-                Splay(node);
+                Splay(result.Node);
             }
-            return ReadOnlyNode.Create(node);
+            return ReadOnlyNode.Create(result.Node);
         }
         
         public ReadOnlyNode Add(TKey key, TValue value)
         {
-            if (root == null)
+            if (root == null) // Insert root
             {
                 root = new Node(key, value, null);
                 Count = 1;
-                return ReadOnlyNode.Create(root).Value;
+                return Root.Value;
             }
-            Node parentNode = null;
-            var node = FindNodeImpl(key, root, ref parentNode);
+            var result = FindNodeImpl(key);
+            var node = result.Node;
             if (node != null) // Key-Value already present, just overwrite current value
             {
                 node.Value = value;
-                return ReadOnlyNode.Create(node).Value;
-            }
-            node = new Node(key, value, parentNode);
-            var result = KeyComparer.Compare(key, parentNode.Key);
-            if (KeyComparer.Compare(key, parentNode.Key) < 0)
-            {
-                parentNode.Left = node;
             }
             else
             {
-                parentNode.Right = node;
+                node = InsertNewNode(key, value, result.ParentNode);
             }
-            Splay(node);
-            Count++;
             return ReadOnlyNode.Create(node).Value;
         }
-
+        
         public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
         
         public bool Remove(TKey key) => RemoveImpl(key, null);
@@ -143,9 +139,8 @@ namespace AlgorithmsCollection
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            Node parentNode = null;
-            var result = FindNodeImpl(item.Key, root, ref parentNode);
-            return result != null && result.Value.Equals(item.Value);
+            var result = FindNodeImpl(item.Key);
+            return result.Node != null && result.Node.Value.Equals(item.Value);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -179,7 +174,7 @@ namespace AlgorithmsCollection
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
+        
         private Node MostLeftNode(Node node) => node.Left != null ? MostLeftNode(node.Left) : node;
         private Node MostRightNode(Node node) => node.Right != null ? MostRightNode(node.Right) : node;
 
@@ -278,7 +273,14 @@ namespace AlgorithmsCollection
             }
         }
 
-        private Node FindNodeImpl(TKey key, Node node, ref Node resultNodeParent)
+        private FindNodeResult FindNodeImpl(TKey key)
+        {
+            Node parentNode = null;
+            var node = FindNodeRecursive(key, root, ref parentNode);
+            return new FindNodeResult { Node = node, ParentNode = parentNode };
+        }
+
+        private Node FindNodeRecursive(TKey key, Node node, ref Node resultNodeParent)
         {
             if (node == null)
             {
@@ -290,20 +292,40 @@ namespace AlgorithmsCollection
                 return node;
             }
             resultNodeParent = node; // Set parent, we continue searching
-            return FindNodeImpl(key, cmpResult < 0 ? node.Left : node.Right, ref resultNodeParent);
+            return FindNodeRecursive(key, cmpResult < 0 ? node.Left : node.Right, ref resultNodeParent);
+        }
+
+        private Node InsertNewNode(TKey key, TValue value, Node parentNode)
+        {
+            var node = new Node(key, value, parentNode);
+            if (KeyComparer.Compare(key, parentNode.Key) < 0)
+            {
+                parentNode.Left = node;
+            }
+            else
+            {
+                parentNode.Right = node;
+            }
+            Splay(node);
+            Count++;
+            return node;
         }
 
         private bool RemoveImpl(TKey key, Optional<TValue> value)
         {
-            Node resultParent = null;
-            var node = FindNodeImpl(key, root, ref resultParent);
-            if (node == null || (value != null && value.HasValue && !node.Value.Equals(value.Value)))
+            var result = FindNodeImpl(key);
+            if (result.Node == null || (value != null && value.HasValue && !result.Node.Value.Equals(value.Value)))
             {
                 return false;
             }
-            Splay(node);
-            var left = node.Left;
-            var right = node.Right;
+            Splay(result.Node);
+            CreateTreeFromSubtrees(result.Node.Left, result.Node.Right);
+            Count--;
+            return true;
+        }
+
+        private void CreateTreeFromSubtrees(Node left, Node right)
+        {
             if (left != null)
             {
                 left.Parent = null;
@@ -325,15 +347,13 @@ namespace AlgorithmsCollection
             }
             else if (right != null)
             {
-                root = right;
+                root = right; // No left subtree, root is first node from right tree
                 root.Parent = null;
             }
             else
             {
                 root = null;
             }
-            Count--;
-            return true;
         }
 
         private void FetchElementsRecursive(Node node, List<KeyValuePair<TKey, TValue>> elements)

@@ -301,5 +301,63 @@ namespace AlgorithmsCollectionUnitTests
             Assert.IsFalse(tree.Contains(new KeyValuePair<int, int>(-1, 1)));
             Assert.IsFalse(tree.Contains(new KeyValuePair<int, int>(3, 2)));
         }
+
+        [TestMethod]
+        public void SplayTreeCopyTo()
+        {
+            var values = new string[] { "a", "b", "c", "d" };
+            var tree = new SplayTree<int, string>();
+            for (int i = 0; i < values.Length; i++)
+            {
+                tree.Add(i + 1, values[i]);
+            }
+            var array = new KeyValuePair<int, string>[5];
+            tree.CopyTo(array, 1);
+            for (int i = 0; i < values.Length; i++)
+            {
+                Assert.AreEqual(array[i + 1].Key, i + 1);
+                Assert.AreEqual(array[i + 1].Value, values[i]);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SplayTreeCopyToNullArray()
+        {
+            new SplayTree<int, int>().CopyTo(null, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SplayTreeCopyToArrayIndexInvalid()
+        {
+            new SplayTree<int, int>().CopyTo(new KeyValuePair<int, int>[0], -1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SplayTreeCopyToNotEnoughSpace()
+        {
+            var tree = new SplayTree<int, int> { { 1, 2 }, { 2, 3 } };
+            tree.CopyTo(new KeyValuePair<int, int>[1], 0);
+        }
+        
+        [TestMethod]
+        public void SplayTreeGetEnumerator()
+        {
+            var keys = new string[] { "A", "B", "C" };
+            var tree = new SplayTree<string, int>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                tree.Add(keys[i], i + 1);
+            }
+            int counter = 0;
+            foreach (var elem in tree)
+            {
+                Assert.AreEqual(elem.Key, keys[counter]);
+                Assert.AreEqual(elem.Value, counter + 1);
+                counter++;
+            }
+        }
     }
 }
