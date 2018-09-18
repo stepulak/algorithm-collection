@@ -1,10 +1,9 @@
 # Algorithm collection
 
-Written in C# using .NET library. This project is far from being complete (17th July 2018). 
-Goal of this project is not to provide powerful, generic and fast library for everyday use, but a helpful library which you
-might use in your own project, modify it or learn from it.
+Written in C# using .NET library.
+Goal of this project is not to provide powerful, generic and fast library for everyday use, but a helpful (and relatively small) library which you might use in your own project, modify it or learn from it.
 Motto of this library is "Hey, I like this part, I think I will take it and use it in my project" (of course under project's license).
-I (the author) do this library just for fun and personal use.
+I (the author) do this library just for fun and for personal use.
 
 ## Finished
 
@@ -13,6 +12,7 @@ I (the author) do this library just for fun and personal use.
 * Vector (C++ STL equivalent)
 * HashTable
 * CircularQueue
+* SplayTree
 * Graph representation and algorithms
 	* Dijkstra
 	* Bellman-Ford
@@ -61,12 +61,5 @@ I (the author) do this library just for fun and personal use.
 	* ElGamal (discrete logarithm problem)
 
 and many more...
-
-## Still under development
-
-* B tree
-* Polynomial codes
-
-and more is comming...
 
 Each class and method contains equivalent set of Unit tests, but if you find a bug, feel free to pull a request!
