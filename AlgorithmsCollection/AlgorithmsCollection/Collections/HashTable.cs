@@ -7,19 +7,43 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Generic hash table with linked list separate chaining.
+    /// </summary>
+    /// <typeparam name="TKey">Key type of elements</typeparam>
+    /// <typeparam name="TValue">Value type of elements</typeparam>
     public class HashTable<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>
     {
         public const int TableSizeDefault = 1024;
+
+        /// <summary>
+        /// Size of current table.
+        /// </summary>
         public int TableSize => table.Length;
+
+        /// <summary>
+        /// Number of elements.
+        /// </summary>
         public int Count { get; private set; } = 0;
         public bool IsReadOnly => false;
         
+        /// <summary>
+        /// List of all present keys in table.
+        /// </summary>
         public List<TKey> Keys => table.SelectMany(list => list.Select(pair => pair.Key)).ToList();
+
+        /// <summary>
+        /// List of all present values in table.
+        /// </summary>
         public List<TValue> Values => table.SelectMany(list => list.Select(pair => pair.Value)).ToList();
 
         private IEqualityComparer<TKey> Comparer { get; set; } = null;
         private List<KeyValuePair<TKey, TValue>>[] table;
-
+        
+        /// <summary>
+        /// Create hashtable with given table size (optional).
+        /// </summary>
+        /// <param name="tableSize">Size of the hashtable.</param>
         public HashTable(int tableSize = TableSizeDefault)
         {
             if (tableSize <= 0)
@@ -29,6 +53,11 @@ namespace AlgorithmsCollection
             table = new List<KeyValuePair<TKey, TValue>>[tableSize];
         }
 
+        /// <summary>
+        /// Create hashtable and fill it with elements from dictionary.
+        /// </summary>
+        /// <param name="dictionary">Elements to insert</param>
+        /// <param name="tableSize">Size of the hashtable</param>
         public HashTable(IDictionary<TKey, TValue> dictionary, int tableSize = TableSizeDefault) : this(tableSize)
         {
             if (dictionary == null)
@@ -41,15 +70,29 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Create hashtable and setup own equality comparer for hashcode computation.
+        /// </summary>
+        /// <param name="comparer">Comparer for computing hashcode</param>
+        /// <param name="tableSize">Size of hashtable</param>
         public HashTable(IEqualityComparer<TKey> comparer, int tableSize = TableSizeDefault) : this(tableSize)
         {
             Comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
+        /// <summary>
+        /// Create hashtable and fill it with values from other hashtable.
+        /// </summary>
+        /// <param name="from">Hashtable to copy</param>
         public HashTable(HashTable<TKey, TValue> from) : this(from?.ToDictionary())
         {
         }
 
+        /// <summary>
+        /// Get/set value at given key.
+        /// </summary>
+        /// <param name="key">Element's key</param>
+        /// <returns>Element's value</returns>
         public TValue this[TKey key]
         {
             get
@@ -62,6 +105,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Get value based on given key.
+        /// </summary>
+        /// <param name="key">Element's key</param>
+        /// <returns>Element's value</returns>
         public TValue GetValue(TKey key)
         {
             var list = table[ComputeHash(key)];
@@ -73,8 +121,17 @@ namespace AlgorithmsCollection
             return list[index].Value;
         }
 
+        /// <summary>
+        /// Add key-value pair into table.
+        /// </summary>
+        /// <param name="key">Element's key</param>
+        /// <param name="value">Element's value</param>
         public void Add(TKey key, TValue value) => Add(new KeyValuePair<TKey, TValue>(key, value));
 
+        /// <summary>
+        /// Add key-value pair into table.
+        /// </summary>
+        /// <param name="item">Key-value pair to add</param>
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             int hash = ComputeHash(item.Key);
@@ -91,13 +148,21 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Clear the hashtable and remove all elements.
+        /// </summary>
         public void Clear()
         {
             var tableSize = TableSize;
             table = new List<KeyValuePair<TKey, TValue>>[tableSize];
             Count = 0;
         }
-
+        
+        /// <summary>
+        /// Check whether hashtable contains an element with given key.
+        /// </summary>
+        /// <param name="key">Key of element to check</param>
+        /// <returns>True if table contains element with given key, otherwise false</returns>
         public bool Contains(TKey key)
         {
             try
@@ -111,8 +176,62 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Check whether hashtable contains given element.
+        /// </summary>
+        /// <param name="item">Element to check</param>
+        /// <returns>True if hashtable contains given element, otherwise false</returns>
         public bool Contains(KeyValuePair<TKey, TValue> item) => table[ComputeHash(item.Key)].Contains(item);
+        
+        /// <summary>
+        /// Remove first occurence of element with given key.
+        /// </summary>
+        /// <param name="key">Element's key</param>
+        /// <returns>True if any element was removed, otherwise false</returns>
+        public bool Remove(TKey key) => RemoveImpl(key, null);
 
+        /// <summary>
+        /// Remove first occurence of given element.
+        /// </summary>
+        /// <param name="item">Element to remove</param>
+        /// <returns>True if any element was removed, otherwise false</returns>
+        public bool Remove(KeyValuePair<TKey, TValue> item) => RemoveImpl(item.Key, item.Value);
+        
+        /// <summary>
+        /// Set new tablesize and rehash all elements.
+        /// </summary>
+        /// <param name="newTableSize">Table's new size</param>
+        public void ChangeTableSizeAndRehash(int newTableSize)
+        {
+            if (newTableSize <= 0)
+            {
+                throw new ArgumentException("Table size must be positive!");
+            }
+            var oldTable = table;
+            Count = 0;
+            table = new List<KeyValuePair<TKey, TValue>>[newTableSize];
+            foreach (var list in oldTable)
+            {
+                list?.ForEach(pair => Add(pair));
+            }
+        }
+        
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            foreach (var list in table)
+            {
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var pair in list)
+                    {
+                        yield return pair;
+                    }
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             if (array == null)
@@ -132,41 +251,7 @@ namespace AlgorithmsCollection
                 array[arrayIndex++] = pair;
             }
         }
-
-        public bool Remove(TKey key) => RemoveImpl(key, null);
-        public bool Remove(KeyValuePair<TKey, TValue> item) => RemoveImpl(item.Key, item.Value);
         
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            foreach (var list in table)
-            {
-                if (list != null && list.Count > 0)
-                {
-                    foreach (var pair in list)
-                    {
-                        yield return pair;
-                    }
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        
-        public void ChangeTableSizeAndRehash(int newTableSize)
-        {
-            if (newTableSize <= 0)
-            {
-                throw new ArgumentException("Table size must be positive!");
-            }
-            var oldTable = table;
-            Count = 0;
-            table = new List<KeyValuePair<TKey, TValue>>[newTableSize];
-            foreach (var list in oldTable)
-            {
-                list?.ForEach(pair => Add(pair));
-            }
-        }
-
         public override bool Equals(object obj)
         {
             if (obj is HashTable<TKey, TValue> table)

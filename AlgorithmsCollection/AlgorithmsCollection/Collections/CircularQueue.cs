@@ -7,11 +7,22 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Templated circular queue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class CircularQueue<T> : IEnumerable<T>
     {
         private const int DefaultBufferSize = 256;
 
+        /// <summary>
+        /// Number of elements in queue.
+        /// </summary>
         public int Count => end - start;
+
+        /// <summary>
+        /// Reserved capacity of queue.
+        /// </summary>
         public int Capacity => buffer.Length;
         public bool Empty => Count == 0;
 
@@ -22,17 +33,28 @@ namespace AlgorithmsCollection
         private int start = 0;
         private int end = 0;
         
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public CircularQueue() : this(DefaultBufferSize)
         {
 
         }
 
-        public CircularQueue(int size)
+        /// <summary>
+        /// Create queue with given capacity
+        /// </summary>
+        /// <param name="capacity"></param>
+        public CircularQueue(int capacity)
         {
-            CheckSizeThrow(size);
-            buffer = new T[size];
+            CheckSizeThrow(capacity);
+            buffer = new T[capacity];
         }
 
+        /// <summary>
+        /// Create queue and fill it with given values.
+        /// </summary>
+        /// <param name="enumerable">Values to fill with the queue</param>
         public CircularQueue(IEnumerable<T> enumerable)
         {
             if (enumerable == null)
@@ -51,12 +73,20 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Clear the queue and remove all elements.
+        /// </summary>
         public void Clear()
         {
             start = 0;
             end = 0;
         }
 
+        /// <summary>
+        /// Check if queue contains given value.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>True, if queue contains given value, otherwise false.</returns>
         public bool Contains(T value)
         {
             foreach (var elem in this)
@@ -69,6 +99,10 @@ namespace AlgorithmsCollection
             return false;
         }
 
+        /// <summary>
+        /// Add value into queue.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void Enqueue(T value)
         {
             if (end - start == Capacity)
@@ -80,6 +114,10 @@ namespace AlgorithmsCollection
             FixBufferIndices();
         }
 
+        /// <summary>
+        /// Return removed first value from queue.
+        /// </summary>
+        /// <returns>Removed first value.</returns>
         public T Dequeue()
         {
             if (end <= start)
@@ -92,6 +130,10 @@ namespace AlgorithmsCollection
             return buffer[index];
         }
         
+        /// <summary>
+        /// Resize queue. If the new size is lower than current size, then the queue will be shrinked.
+        /// </summary>
+        /// <param name="size">New size</param>
         public void Resize(int size)
         {
             CheckSizeThrow(size);
@@ -170,7 +212,7 @@ namespace AlgorithmsCollection
         {
             if (size <= 0)
             {
-                throw new ArgumentOutOfRangeException("Given size must be positive");
+                throw new ArgumentOutOfRangeException("Given size/capacity must be positive");
             }
         }
     }

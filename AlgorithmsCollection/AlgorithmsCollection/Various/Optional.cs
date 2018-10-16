@@ -6,9 +6,20 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Class that holds optional value. Equivalent to C++ optional class.
+    /// </summary>
+    /// <typeparam name="T">Type of optional value</typeparam>
     public class Optional<T>
     {
+        /// <summary>
+        /// Indicates whether this class has value present.
+        /// </summary>
         public bool HasValue { get; private set; }
+
+        /// <summary>
+        /// Get/set optional value.
+        /// </summary>
         public T Value
         {
             get
@@ -23,18 +34,33 @@ namespace AlgorithmsCollection
         }
         private T value;
 
+        /// <summary>
+        /// Default constructor with empty value. 
+        /// </summary>
         public Optional()
         {
             HasValue = false;
         }
 
+        /// <summary>
+        /// Create instance of Optional class and fill it with given value.
+        /// </summary>
+        /// <param name="value">Value to set</param>
         public Optional(T value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// If HasValue is true, then return the primary value. Otherwise return given secondary value.
+        /// </summary>
+        /// <param name="secondaryValue">Secondary value to return if primary value is not set</param>
+        /// <returns>Primary value if present, otherwise secondary value</returns>
         public T ValueOr(T secondaryValue) => HasValue ? value : secondaryValue;
 
+        /// <summary>
+        /// Remove value and set HasValue to false.
+        /// </summary>
         public void Reset()
         {
             HasValue = false;

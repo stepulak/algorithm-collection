@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Generic double-linked list. Very similar to .NET linked list.
+    /// </summary>
+    /// <typeparam name="T">Element's type</typeparam>
     public class LinkedList<T> : ICollection<T>, IEnumerable<T>
     {
         private class Node
@@ -36,7 +40,7 @@ namespace AlgorithmsCollection
                 get { return node.Value; }
                 set { node.Value = value; }
             }
-            public object ThisNode => node; // so that you don't have to make Node class public
+            public object ThisNode => node;
 
             public static ReadOnlyNode? Create(object node)
             {
@@ -55,15 +59,30 @@ namespace AlgorithmsCollection
         public int Count { get; private set; } = 0;
         public bool Empty => Count == 0;
 
+        /// <summary>
+        /// Value of front node.
+        /// </summary>
         public T FrontValue => frontNode.Value;
+
+        /// <summary>
+        /// Value of back node.
+        /// </summary>
         public T BackValue => backNode.Value;
+        
         public ReadOnlyNode? FrontNode => ReadOnlyNode.Create(frontNode);
         public ReadOnlyNode? BackNode => ReadOnlyNode.Create(backNode);
         
+        /// <summary>
+        /// Create empty list.
+        /// </summary>
         public LinkedList()
         {
         }
 
+        /// <summary>
+        /// Create list and fill it with values
+        /// </summary>
+        /// <param name="values">Values to fill</param>
         public LinkedList(IEnumerable<T> values)
         {
             if (values == null)
@@ -76,14 +95,25 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Clear linked list and remove all elements.
+        /// </summary>
         public void Clear()
         {
             Count = 0;
             frontNode = backNode = null;
         }
 
+        /// <summary>
+        /// Add value at the end of the linked list. Equal to PushBack method.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void Add(T value) => PushBack(value);
 
+        /// <summary>
+        /// Add value at the beginning of the linked list.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void PushFront(T value)
         {
             if (frontNode == null)
@@ -100,6 +130,10 @@ namespace AlgorithmsCollection
             Count++;
         }
 
+        /// <summary>
+        /// Add value at the end of the linked list.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void PushBack(T value)
         {
             if (backNode == null)
@@ -116,6 +150,11 @@ namespace AlgorithmsCollection
             Count++;
         }
         
+        /// <summary>
+        /// Return node at given index.
+        /// </summary>
+        /// <param name="index">Index of node to return</param>
+        /// <returns>Node at given index</returns>
         public ReadOnlyNode NodeAt(int index)
         {
             if (index < 0 || index >= Count)
@@ -134,6 +173,11 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node).Value;
         }
         
+        /// <summary>
+        /// Get/set node's value at given index
+        /// </summary>
+        /// <param name="index">Value's index</param>
+        /// <returns>Value at given index</returns>
         public T this[int index]
         {
             get
@@ -146,6 +190,11 @@ namespace AlgorithmsCollection
             }
         }
         
+        /// <summary>
+        /// Insert value before given node.
+        /// </summary>
+        /// <param name="node">Insert before this node</param>
+        /// <param name="value">Value to insert</param>
         public void InsertBefore(ReadOnlyNode node, T value)
         {
             if (node.ThisNode == frontNode)
@@ -164,8 +213,18 @@ namespace AlgorithmsCollection
             Count++;
         }
 
+        /// <summary>
+        /// Insert value before node at given index.
+        /// </summary>
+        /// <param name="index">Insert before node at this index</param>
+        /// <param name="value">Value to insert</param>
         public void InsertBefore(int index, T value) => InsertBefore(NodeAt(index), value);
         
+        /// <summary>
+        /// Insert value after given node.
+        /// </summary>
+        /// <param name="node">Insert after this node</param>
+        /// <param name="value">Value to insert</param>
         public void InsertAfter(ReadOnlyNode node, T value)
         {
             if (node.ThisNode == backNode)
@@ -184,8 +243,17 @@ namespace AlgorithmsCollection
             Count++;
         }
 
+        /// <summary>
+        /// Insert value after node at given index.
+        /// </summary>
+        /// <param name="index">Insert after node at this index</param>
+        /// <param name="value">Value to insert</param>
         public void InsertAfter(int index, T value) => InsertAfter(NodeAt(index), value);
 
+        /// <summary>
+        /// Remove first node from list and return it's value.
+        /// </summary>
+        /// <returns>Value from removed first node</returns>
         public T PopFront()
         {
             if (Empty)
@@ -206,6 +274,10 @@ namespace AlgorithmsCollection
             return value;
         }
 
+        /// <summary>
+        /// Remove last node from list and return it's value.
+        /// </summary>
+        /// <returns>Value from removed last node</returns>
         public T PopBack()
         {
             if (Empty)
@@ -226,6 +298,11 @@ namespace AlgorithmsCollection
             return value;
         }
 
+        /// <summary>
+        /// Remove node with first occurence of given value.
+        /// </summary>
+        /// <param name="value">Value to delete</param>
+        /// <returns>True if any node was deleted</returns>
         public bool Remove(T value)
         {
             var node = Find(v => v.Equals(value));
@@ -237,8 +314,16 @@ namespace AlgorithmsCollection
             return false;
         }
 
+        /// <summary>
+        /// Remove node at given index.
+        /// </summary>
+        /// <param name="index">Index of node to delete</param>
         public void RemoveAt(int index) => RemoveNode(NodeAt(index));
 
+        /// <summary>
+        /// Remove node from list.
+        /// </summary>
+        /// <param name="node">Node to remove</param>
         public void RemoveNode(ReadOnlyNode node)
         {
             if (node.ThisNode == frontNode)
@@ -257,6 +342,10 @@ namespace AlgorithmsCollection
             Count--;
         }
         
+        /// <summary>
+        /// Remove all nodes with values that match given predicate
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
         public void RemoveAll(Predicate<T> predicate)
         {
             var list = FindAll(predicate);
@@ -266,8 +355,18 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Return first node that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
+        /// <returns>Node with value that match given predicate, otherwise null</returns>
         public ReadOnlyNode? Find(Predicate<T> predicate) => ReadOnlyNode.Create(FindFrom(predicate, frontNode));
 
+        /// <summary>
+        /// Find all nodes with values that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
+        /// <returns>List of nodes that match given predicate</returns>
         public List<ReadOnlyNode> FindAll(Predicate<T> predicate)
         {
             var list = new List<ReadOnlyNode>();
@@ -280,9 +379,25 @@ namespace AlgorithmsCollection
             return list;
         }
 
+        /// <summary>
+        /// Check whether this list contains given value.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>True if this list contains given value, otherwise false</returns>
         public bool Contains(T value) => Find(v => v.Equals(value)) != null;
+
+        /// <summary>
+        /// Swap values at nodes with given indices.
+        /// </summary>
+        /// <param name="indexA">Index of first node</param>
+        /// <param name="indexB">Index of second node</param>
         public void Swap(int indexA, int indexB) => Swap(NodeAt(indexA), NodeAt(indexB));
 
+        /// <summary>
+        /// Swap values at given nodes.
+        /// </summary>
+        /// <param name="nodeA">First node</param>
+        /// <param name="nodeB">Second node</param>
         public void Swap(ReadOnlyNode nodeA, ReadOnlyNode nodeB)
         {
             var swapNodeA = (Node)nodeA.ThisNode;
@@ -292,6 +407,10 @@ namespace AlgorithmsCollection
             swapNodeB.Value = tmpValue;
         }
 
+        /// <summary>
+        /// Sort values in list according to given comparer.
+        /// </summary>
+        /// <param name="comparer">Comparer</param>
         public void Sort(IComparer<T> comparer)
         {
             var sorted = this.QuickSortLinq(comparer);
@@ -302,6 +421,9 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Reverse list.
+        /// </summary>
         public void Reverse()
         {
             var newFrontNode = backNode;
@@ -316,6 +438,10 @@ namespace AlgorithmsCollection
             backNode = newBackNode;
         }
 
+        /// <summary>
+        /// Insert values at the end of list.
+        /// </summary>
+        /// <param name="values">Values to insert</param>
         public void AppendValues(IEnumerable<T> values)
         {
             if (values == null)
@@ -327,9 +453,7 @@ namespace AlgorithmsCollection
                 PushBack(value);
             }
         }
-
-        public void AppendList(LinkedList<T> list) => AppendValues(list);
-
+        
         public IEnumerator<T> GetEnumerator()
         {
             for (var node = frontNode; node != null; node = node.Next)

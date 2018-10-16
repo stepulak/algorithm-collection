@@ -27,6 +27,9 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Read only wrapper to Node class.
+        /// </summary>
         public struct ReadOnlyNode
         {
             private Node node;

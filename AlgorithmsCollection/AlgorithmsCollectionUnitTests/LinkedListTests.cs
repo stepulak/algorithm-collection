@@ -272,7 +272,7 @@ namespace AlgorithmsCollectionUnitTests
         public void LinkedListAppendList()
         {
             var list = new LinkedList<int> { 1, 2 };
-            list.AppendList(new LinkedList<int> { 3, 4 });
+            list.AppendValues(new LinkedList<int> { 3, 4 });
             list.AppendValues(new ListInt { 5, 6 });
             for (int i = 0; i < 6; i++)
             {

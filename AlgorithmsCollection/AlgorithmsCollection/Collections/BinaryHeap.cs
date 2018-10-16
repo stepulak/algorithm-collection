@@ -8,38 +8,80 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Standard generic binary heap with automatic notification of change of value's position in heap.
+    /// </summary>
+    /// <typeparam name="T">Generic type</typeparam>
     public class BinaryHeap<T> : ICollection<T>
     {
         private List<T> tree = new List<T>();
-        private ChangeIndexNotifier indexNotifier = null;
+        private readonly ChangeIndexNotifier indexNotifier = null;
 
+        /// <summary>
+        /// Delegate for user notification when value change it's position in heap.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="newIndex"></param>
         public delegate void ChangeIndexNotifier(T value, int newIndex);
 
+        /// <summary>
+        /// Tree structure property.
+        /// </summary>
         public ReadOnlyCollection<T> Tree => new ReadOnlyCollection<T>(tree);
+
         public int Count => tree.Count;
         public T Root => tree.First();
         public bool IsReadOnly => false;
 
+        /// <summary>
+        /// Value comparer.
+        /// </summary>
         public IComparer<T> Comparer { get; }
         
+        /// <summary>
+        /// Create heap with given comparer.
+        /// </summary>
+        /// <param name="comparer">Value comparer</param>
         public BinaryHeap(IComparer<T> comparer)
         {
             Comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
+        /// <summary>
+        /// Create heap with given comparer and initial values.
+        /// </summary>
+        /// <param name="comparer">Value comparer</param>
+        /// <param name="initialValues">Inserted values into heap</param>
         public BinaryHeap(IComparer<T> comparer, IEnumerable<T> initialValues) : this(comparer)
         {
             PushRange(initialValues);
         }
         
+        /// <summary>
+        /// Create heap with given comparer and own change index notifier.
+        /// </summary>
+        /// <param name="comparer">Value comparer</param>
+        /// <param name="notifier">User's own change index notifier</param>
         public BinaryHeap(IComparer<T> comparer, ChangeIndexNotifier notifier) : this(comparer)
         {
             indexNotifier = notifier ?? throw new ArgumentNullException("Index notifier is null");
         }
 
+        /// <summary>
+        /// Clear heap, remove all elements.
+        /// </summary>
         public void Clear() => tree.Clear();
+
+        /// <summary>
+        /// Reserve capacity in heap. If the given capacity is lower, then the tree will be shrinked.
+        /// </summary>
+        /// <param name="n">Number of elements.</param>
         public void ReserveCapacity(int n) => tree.Capacity = n;
         
+        /// <summary>
+        /// Add values into heap.
+        /// </summary>
+        /// <param name="values">Values to add</param>
         public void PushRange(IEnumerable<T> values)
         {
             if (values == null)
@@ -52,8 +94,16 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Add value into heap. Equal to Push method.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void Add(T value) => Push(value);
 
+        /// <summary>
+        /// Add value into heap. Equal to Add method.
+        /// </summary>
+        /// <param name="value">Value to add</param>
         public void Push(T value)
         {
             tree.Add(value);
@@ -61,6 +111,10 @@ namespace AlgorithmsCollection
             BubbleUp(Count - 1);
         }
 
+        /// <summary>
+        /// Return removed first element from heap.
+        /// </summary>
+        /// <returns>First element from heap</returns>
         public T Pop()
         {
             if (Count == 0)
@@ -70,6 +124,11 @@ namespace AlgorithmsCollection
             return RemoveAt(0);
         }
         
+        /// <summary>
+        /// Notify the heap that value on given index has changed (externally by user).
+        /// Need to be called for having a valid heap structure.
+        /// </summary>
+        /// <param name="index">Changed value's index</param>
         public void ReplacedOnIndex(int index)
         {
             if (index < 0 || index >= Count)
@@ -87,11 +146,38 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Check, if heap contains given value.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>True if heap contains given value, false otherwise</returns>
         public bool Contains(T value) => tree.Contains(value);
+
+        /// <summary>
+        /// Find first value that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
+        /// <returns>First value that fulfull given predicate</returns>
         public T Find(Predicate<T> predicate) => tree.Find(predicate);
+
+        /// <summary>
+        /// Find all values that fulfull given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
         public List<T> FindAll(Predicate<T> predicate) => tree.FindAll(predicate);
+
+        /// <summary>
+        /// Remove first occurence of given value in heap.
+        /// </summary>
+        /// <param name="value">Value to remove</param>
+        /// <returns>True if values was removed, false otherwise</returns>
         public bool Remove(T value) => Remove(v => Comparer.Compare(v, value) == 0);
         
+        /// <summary>
+        /// Remove first value that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
+        /// <returns>True if any value was removed, false otherwise</returns>
         public bool Remove(Predicate<T> predicate)
         {
             if (predicate == null)
@@ -107,8 +193,16 @@ namespace AlgorithmsCollection
             return false;
         }
 
+        /// <summary>
+        /// Remove all values from heap.
+        /// </summary>
+        /// <param name="value">Value to remove</param>
         public void RemoveAll(T value) => RemoveAll(v => Comparer.Compare(v, value) == 0);
         
+        /// <summary>
+        /// Remove all values that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate</param>
         public void RemoveAll(Predicate<T> predicate)
         {
             if (predicate == null)

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
-    class Program
-    {    
-        static void Main(string[] args)
+    public static class Program
+    {
+        public static void Main(string[] args)
         {
-            Console.ReadLine();
         }
     }
 }
