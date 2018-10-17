@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Generic splay tree. Splay tree is just another self-balancing tree with logarithmic
+    /// search, insert and delete operations (amortized in this case).
+    /// </summary>
+    /// <typeparam name="TKey">Type of key</typeparam>
+    /// <typeparam name="TValue">Type of value</typeparam>
     public class SplayTree<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>
     {
         private class Node
@@ -68,22 +74,44 @@ namespace AlgorithmsCollection
         }
 
         private Node root = null;
-        private static IComparer<TKey> DefaultKeyComparer = Comparer<TKey>.Default;
+        private static readonly IComparer<TKey> DefaultKeyComparer = Comparer<TKey>.Default;
 
+        /// <summary>
+        /// Key comparer used in tree search, insert and delete operations.
+        /// </summary>
         public IComparer<TKey> KeyComparer { get; private set; } = DefaultKeyComparer;
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Root of the tree, null if tree is empty.
+        /// </summary>
         public ReadOnlyNode? Root => ReadOnlyNode.Create(root);
+
+        /// <summary>
+        /// Number of elements in tree
+        /// </summary>
         public int Count { get; private set; } = 0;
 
+        /// <summary>
+        /// Create empty tree with default key comparer.
+        /// </summary>
         public SplayTree()
         {
         }
 
+        /// <summary>
+        /// Create empty tree with own key comparer.
+        /// </summary>
+        /// <param name="keyComparer">Key comparer</param>
         public SplayTree(IComparer<TKey> keyComparer)
         {
             KeyComparer = keyComparer ?? throw new ArgumentNullException("KeyComparer is null");
         }
 
+        /// <summary>
+        /// Create tree and fill it with elements.
+        /// </summary>
+        /// <param name="enumerable">Elements to insert</param>
         public SplayTree(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
         {
             if (enumerable == null)
@@ -96,6 +124,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Find node with given key.
+        /// </summary>
+        /// <param name="key">Key of node to find</param>
+        /// <returns>Node containing given key if any found, otherwise null</returns>
         public ReadOnlyNode? Find(TKey key)
         {
             var result = FindNodeImpl(key);
@@ -106,6 +139,12 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(result.Node);
         }
         
+        /// <summary>
+        /// Add element (key-value pair) to tree.
+        /// </summary>
+        /// <param name="key">Element's key</param>
+        /// <param name="value">Element's value</param>
+        /// <returns>Added node</returns>
         public ReadOnlyNode Add(TKey key, TValue value)
         {
             if (root == null) // Insert root
@@ -127,19 +166,48 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node).Value;
         }
         
-        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+        /// <summary>
+        /// Add element (key-value pair) to tree.
+        /// </summary>
+        /// <param name="item">Key-value pair to add</param>
+        /// <returns>Added node</returns>
+        public ReadOnlyNode Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
         
+        /// <summary>
+        /// Remove first node that containst given key.
+        /// </summary>
+        /// <param name="key">Key of node to remove</param>
+        /// <returns>True if any node was removed, false otherwise</returns>
         public bool Remove(TKey key) => RemoveImpl(key, null);
+
+        /// <summary>
+        /// Remove first node that match given element (key-value pair).
+        /// </summary>
+        /// <param name="item">Key and value of node to remove</param>
+        /// <returns>True if any node was removed, false otherwise</returns>
         public bool Remove(KeyValuePair<TKey, TValue> item) => RemoveImpl(item.Key, item.Value);
 
+        /// <summary>
+        /// Clear the tree, remove all elements.
+        /// </summary>
         public void Clear()
         {
             root = null;
             Count = 0;
         }
 
+        /// <summary>
+        /// Check whether tree contains a node with given key.
+        /// </summary>
+        /// <param name="key">Key of node to check</param>
+        /// <returns>True if tree contains node with given key, false otherwise</returns>
         public bool ContainsKey(TKey key) => Find(key).HasValue;
 
+        /// <summary>
+        /// Check whether tree contains a node with given key and value.
+        /// </summary>
+        /// <param name="item">Key and value of node to check</param>
+        /// <returns>True if tree contains node with given key and value, false otherwise</returns>
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             var result = FindNodeImpl(item.Key);
