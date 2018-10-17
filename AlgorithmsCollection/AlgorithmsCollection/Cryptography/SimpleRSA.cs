@@ -6,12 +6,33 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// RSA encryption/decryption algorithm.
+    /// </summary>
     public class SimpleRSA
     {
-        public uint Modulo { get; private set; }
-        public uint PublicKey { get; private set; }
-        public uint PrivateKey { get; private set; } // Make private key public for debug purposes
+        /// <summary>
+        /// Shared modulo for encryption/decryption.
+        /// </summary>
+        public uint Modulo { get; }
 
+        /// <summary>
+        /// Public key.
+        /// </summary>
+        public uint PublicKey { get; }
+
+        /// <summary>
+        /// Private key (public for debug and information purposes).
+        /// </summary>
+        public uint PrivateKey { get; }
+
+        /// <summary>
+        /// Create instance of SimpleRSA class. 
+        /// P and Q parameters must be prime numbers and P != Q.
+        /// Their product should be large enough to correctly compute encrypted/decrypted messages.
+        /// </summary>
+        /// <param name="p">Prime number P</param>
+        /// <param name="q">Primer number Q</param>
         public SimpleRSA(ushort p, ushort q)
         {
             if (!NumericUtilities.IsPrime(p))
@@ -24,52 +45,60 @@ namespace AlgorithmsCollection
             }
             var euler = (uint)((p - 1) * (q - 1));
             Modulo = (uint)p * q;
-            CountPublicKey(euler);
-            CountPrivateKey(euler);
+            PublicKey = CountPublicKey(euler);
+            PrivateKey = CountPrivateKey(euler, PublicKey);
         }
-
-        // Note that value should be less than RSA's Modulo,
-        // otherwise inverse decryption will return different message...
+        
+        /// <summary>
+        /// Encrypt value.
+        /// </summary>
+        /// <param name="value">Value to encrypt</param>
+        /// <returns>Encrypted value</returns>
         public uint Encrypt(uint value) => NumericUtilities.SolveModulo(value, PublicKey, Modulo);
+
+        /// <summary>
+        /// Encrypt list of values.
+        /// </summary>
+        /// <param name="message">List of values to encrypt</param>
+        /// <returns>Encrypted list of values</returns>
         public List<uint> Encrypt(List<uint> message) => message.Select(Encrypt).ToList();
 
+        /// <summary>
+        /// Decrypt value.
+        /// </summary>
+        /// <param name="value">Value to decrypt</param>
+        /// <returns>Decrypted value</returns>
         public uint Decrypt(uint value) => NumericUtilities.SolveModulo(value, PrivateKey, Modulo);
+
+        /// <summary>
+        /// Decrypt list of values.
+        /// </summary>
+        /// <param name="message">List of values to decrypt</param>
+        /// <returns>Decrypted list of values</returns>
         public List<uint> Decrypt(List<uint> message) => message.Select(Decrypt).ToList();
         
-        private void CountPublicKey(uint euler)
+        private static uint CountPublicKey(uint euler)
         {
-            bool found = false;
             for (uint e = 2; e < euler; e++)
             {
                 if (NumericUtilities.GreatestCommonDivisor((int)euler, (int)e) == 1)
                 {
-                    PublicKey = e;
-                    found = true;
-                    break;
+                    return e;
                 }
             }
-            if (!found)
-            {
-                throw new Exception("Unable to count public key");
-            }
+            throw new Exception("Unable to count public key");
         }
 
-        private void CountPrivateKey(uint euler)
+        private static uint CountPrivateKey(uint euler, uint publicKey)
         {
-            bool found = false;
             for (uint d = 1; d < euler; d++)
             {
-                if ((d * PublicKey) % euler == 1)
+                if (d * publicKey % euler == 1)
                 {
-                    PrivateKey = d;
-                    found = true;
-                    break;
+                    return d;
                 }
             }
-            if (!found)
-            {
-                throw new Exception("Unable to count private key");
-            }
+            throw new Exception("Unable to count private key");
         }
     }
 }

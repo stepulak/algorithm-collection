@@ -170,8 +170,7 @@ namespace AlgorithmsCollection
         /// Add element (key-value pair) to tree.
         /// </summary>
         /// <param name="item">Key-value pair to add</param>
-        /// <returns>Added node</returns>
-        public ReadOnlyNode Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
         
         /// <summary>
         /// Remove first node that containst given key.

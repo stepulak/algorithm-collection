@@ -7,16 +7,30 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Generic vector equivalent to .NET ArrayList or STL std::vector.
+    /// </summary>
+    /// <typeparam name="T">Element's type</typeparam>
     public class Vector<T> : ICollection<T>
     {
         private const int DefaultCapacity = 4;
         private T[] vector = null;
 
+        /// <summary>
+        /// Number of elements in vector.
+        /// </summary>
         public int Count { get; private set; } = 0;
         public bool Empty => Count == 0;
+
+        /// <summary>
+        /// Number of reserved elements.
+        /// </summary>
         public int Capacity => vector.Length;
         public bool IsReadOnly => false;
 
+        /// <summary>
+        /// First value in vector.
+        /// </summary>
         public T Front
         {
             get
@@ -26,6 +40,9 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Last value in vector.
+        /// </summary>
         public T Back
         {
             get
@@ -35,15 +52,26 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Create empty vector with default initial capacity.
+        /// </summary>
         public Vector() : this(DefaultCapacity)
         {
         }
 
+        /// <summary>
+        /// Create empty vector with own initial capacity.
+        /// </summary>
+        /// <param name="capacity"></param>
         public Vector(int capacity)
         {
             Reserve(capacity);
         }
 
+        /// <summary>
+        /// Create vector and fill it with given values.
+        /// </summary>
+        /// <param name="values">Values to insert</param>
         public Vector(IEnumerable<T> values)
         {
             var count = values.Count();
@@ -51,28 +79,46 @@ namespace AlgorithmsCollection
             AddRange(values);
         }
 
-        public void PushBack(T item)
+        /// <summary>
+        /// Add value at the end of vector.
+        /// </summary>
+        /// <param name="value">Value to add</param>
+        public void PushBack(T value)
         {
             ReserveIfFull();
-            vector[Count++] = item;
+            vector[Count++] = value;
         }
         
+        /// <summary>
+        /// Remove value from the end of vector.
+        /// </summary>
+        /// <returns>Removed last value</returns>
         public T PopBack()
         {
             CheckVectorEmptyThrow();
             return vector[--Count];
         }
 
-        public void InsertBefore(T item, int index)
+        /// <summary>
+        /// Insert value before given index. Values after index are automatically moved by one to the right.
+        /// </summary>
+        /// <param name="value">Value to insert</param>
+        /// <param name="index">Index of position</param>
+        public void InsertBefore(T value, int index)
         {
             CheckIndexBoundaryThrow(index);
             ReserveIfFull();
             VectorMoveForwardOneStep(index, 0);
-            vector[index] = item;
+            vector[index] = value;
             Count++;
         }
 
-        public void InsertAfter(T item, int index)
+        /// <summary>
+        /// Insert value after given index. Values after index are automatically moved by one to the right.
+        /// </summary>
+        /// <param name="value">Value to insert</param>
+        /// <param name="index">Index of position</param>
+        public void InsertAfter(T value, int index)
         {
             CheckIndexBoundaryThrow(index);
             ReserveIfFull();
@@ -80,10 +126,15 @@ namespace AlgorithmsCollection
             {
                 VectorMoveForwardOneStep(index, 1);
             }
-            vector[index + 1] = item;
+            vector[index + 1] = value;
             Count++;
         }
 
+        /// <summary>
+        /// Get/set value at given position.
+        /// </summary>
+        /// <param name="index">Index of position to get/set</param>
+        /// <returns></returns>
         public T this[int index]
         {
             get
@@ -98,8 +149,16 @@ namespace AlgorithmsCollection
             }
         }
 
-        public void Add(T item) => PushBack(item);
+        /// <summary>
+        /// Add value at the end of the vector. Equal to PushBack method.
+        /// </summary>
+        /// <param name="value">Value to add</param>
+        public void Add(T value) => PushBack(value);
 
+        /// <summary>
+        /// Append values at the end of the vector.
+        /// </summary>
+        /// <param name="values">Values to add</param>
         public void AddRange(IEnumerable<T> values)
         {
             if (values == null)
@@ -112,6 +171,9 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Clear vector. Remove all elements. Shrink to default capacity.
+        /// </summary>
         public void Clear()
         {
             var capacity = Capacity;
@@ -119,28 +181,21 @@ namespace AlgorithmsCollection
             Count = 0;
         }
 
-        public bool Contains(T item) => FindIndex(item) != -1;
+        /// <summary>
+        /// Check whether this vector contains given value.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>True if vector contains given value, false otherwise.</returns>
+        public bool Contains(T value) => FindIndex(value) != -1;
 
-        public void CopyTo(T[] array, int arrayIndex)
+        /// <summary>
+        /// Remove first value that is equal to given value from the vector.
+        /// </summary>
+        /// <param name="value">Value to remove</param>
+        /// <returns>True if any value was removed, false otherwise</returns>
+        public bool Remove(T value)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException("Array is null");
-            }
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException("ArrayIndex is less than zero");
-            }
-            if (array.Length - arrayIndex < Count)
-            {
-                throw new ArgumentException("Not enough space in array");
-            }
-            Array.Copy(vector, 0, array, arrayIndex, Count);
-        }
-
-        public bool Remove(T item)
-        {
-            var index = FindIndex(item);
+            var index = FindIndex(value);
             if (index != -1)
             {
                 RemoveAt(index);
@@ -149,6 +204,10 @@ namespace AlgorithmsCollection
             return false;
         }
 
+        /// <summary>
+        /// Remove value at given index and shrink the vector.
+        /// </summary>
+        /// <param name="index">Index of value to remove</param>
         public void RemoveAt(int index)
         {
             CheckIndexBoundaryThrow(index);
@@ -159,6 +218,10 @@ namespace AlgorithmsCollection
             Count--;
         }
 
+        /// <summary>
+        /// Remove all values that match given predicate. Vector is automatically shrinked.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
         public void RemoveAll(Predicate<T> predicate)
         {
             var indices = FindAllIndices(predicate);
@@ -171,6 +234,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Find first value that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>First value that match given predicate, default value otherwise</returns>
         public T Find(Predicate<T> predicate)
         {
             CheckPredicateNullThrow(predicate);
@@ -184,13 +252,23 @@ namespace AlgorithmsCollection
             return default(T);
         }
 
+        /// <summary>
+        /// Find all values that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>List of values that match given predicate</returns>
         public List<T> FindAll(Predicate<T> predicate) => FindAllIndices(predicate).Select(index => vector[index]).ToList();
 
-        public int FindIndex(T item)
+        /// <summary>
+        /// Find first value in the vector that is equal to given value and return it's index.
+        /// </summary>
+        /// <param name="value">Value to find</param>
+        /// <returns>Index of first value that is equal to given value, -1 otherwise</returns>
+        public int FindIndex(T value)
         {
             for (int i = 0; i < Count; i++)
             {
-                if (vector[i].Equals(item))
+                if (vector[i].Equals(value))
                 {
                     return i;
                 }
@@ -198,6 +276,11 @@ namespace AlgorithmsCollection
             return -1;
         }
 
+        /// <summary>
+        /// Find all values that match given predicate and return their indices.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>List of indices of values that match given predicate</returns>
         public List<int> FindAllIndices(Predicate<T> predicate)
         {
             CheckPredicateNullThrow(predicate);
@@ -212,6 +295,11 @@ namespace AlgorithmsCollection
             return result;
         }
 
+        /// <summary>
+        /// Change vector's current size and also effectively change Count property.
+        /// If the new size is less than current size, then the vector will be shrinked.
+        /// </summary>
+        /// <param name="size">New size</param>
         public void Resize(int size)
         {
             if (size <= 0)
@@ -228,6 +316,11 @@ namespace AlgorithmsCollection
             oldVector.Take(Count).ToArray().CopyTo(vector, 0);
         }
         
+        /// <summary>
+        /// Change vector's current capacity. If the new capacity is less than current capacity,
+        /// then the vector will be shrinked.
+        /// </summary>
+        /// <param name="capacity">New capacity</param>
         public void Reserve(int capacity)
         {
             if (capacity <= Count)
@@ -244,6 +337,11 @@ namespace AlgorithmsCollection
             oldVector?.CopyTo(vector, 0);
         }
 
+        /// <summary>
+        /// Swap two values at given positions.
+        /// </summary>
+        /// <param name="index1">Position of first value</param>
+        /// <param name="index2">Position of second value</param>
         public void Swap(int index1, int index2)
         {
             CheckIndexBoundaryThrow(index1);
@@ -253,7 +351,27 @@ namespace AlgorithmsCollection
             vector[index2] = tmp;
         }
 
+        /// <summary>
+        /// Shrink vector's capacity to fit it's size. In other words, Count = Capacity.
+        /// </summary>
         public void ShrinkToFit() => Resize(Count);
+        
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("Array is null");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("ArrayIndex is less than zero");
+            }
+            if (array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException("Not enough space in array");
+            }
+            Array.Copy(vector, 0, array, arrayIndex, Count);
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
