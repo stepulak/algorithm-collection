@@ -11,7 +11,7 @@ namespace AlgorithmsCollection
     /// <summary>
     /// Standard generic binary heap with automatic notification of change of value's position in heap.
     /// </summary>
-    /// <typeparam name="T">Generic type</typeparam>
+    /// <typeparam name="T">Type of value</typeparam>
     public class BinaryHeap<T> : ICollection<T>
     {
         private List<T> tree = new List<T>();

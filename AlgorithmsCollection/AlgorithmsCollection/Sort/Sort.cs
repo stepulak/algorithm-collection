@@ -9,11 +9,18 @@ namespace AlgorithmsCollection
     public static class Sort
     {
         /// <summary>
+        /// Standard C-like in-place quicksort implementation with default comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        public static void QuickSortClassic<T>(this T[] array) => QuickSortClassic(array, Comparer<T>.Default);
+
+        /// <summary>
         /// Standard C-like in-place quicksort implementation.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="array"></param>
-        /// <param name="comparer"></param>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        /// <param name="comparer">Comparer</param>
         public static void QuickSortClassic<T>(this T[] array, IComparer<T> comparer)
         {
             if (array == null)
@@ -28,12 +35,20 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Haskell-like quicksort implementation
+        /// Haskell-like quicksort implementation with default comparer.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collection"></param>
-        /// <param name="comparer"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="collection">Enumerable to sort</param>
+        /// <returns>Sorted enumerable</returns>
+        public static IEnumerable<T> QuickSortLinq<T>(this IEnumerable<T> collection) => QuickSortLinq(collection, Comparer<T>.Default);
+
+        /// <summary>
+        /// Haskell-like quicksort implementation.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="collection">Enumerable to sort</param>
+        /// <param name="comparer">Comparer</param>
+        /// <returns>Sorted enumerable</returns>
         public static IEnumerable<T> QuickSortLinq<T>(this IEnumerable<T> collection, IComparer<T> comparer)
         {
             if (collection == null)
@@ -46,7 +61,20 @@ namespace AlgorithmsCollection
             }
             return QuickSortLinqImpl(collection, comparer);
         }
-        
+
+        /// <summary>
+        /// Heap sort with default comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        public static void HeapSort<T>(T[] array) => HeapSort(array, Comparer<T>.Default);
+
+        /// <summary>
+        /// Heap sort with custom comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        /// <param name="comparer">Comparer</param>
         public static void HeapSort<T>(T[] array, IComparer<T> comparer)
         {
             if (array == null)
@@ -64,6 +92,19 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Merge sort with default comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        public static void MergeSort<T>(T[] array) => MergeSort(array, Comparer<T>.Default);
+
+        /// <summary>
+        /// Merge sort with custom comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of value</typeparam>
+        /// <param name="array">Array to sort</param>
+        /// <param name="comparer">Comparer</param>
         public static void MergeSort<T>(T[] array, IComparer<T> comparer)
         {
             if (array == null)

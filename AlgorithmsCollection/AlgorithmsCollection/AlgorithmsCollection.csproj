@@ -51,7 +51,6 @@
     <Compile Include="Matrix\Matrix.cs" />
     <Compile Include="Matrix\Matrix3x3.cs" />
     <Compile Include="Matrix\MatrixNxN.cs" />
-    <Compile Include="Numeric\PolynomialCodes.cs" />
     <Compile Include="Numeric\PrimeNumberGenerator.cs" />
     <Compile Include="Numeric\Statistics.cs" />
     <Compile Include="Program.cs" />

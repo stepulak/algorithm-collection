@@ -10,7 +10,7 @@ namespace AlgorithmsCollection
     /// <summary>
     /// Templated circular queue.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of value</typeparam>
     public class CircularQueue<T> : IEnumerable<T>
     {
         private const int DefaultBufferSize = 256;

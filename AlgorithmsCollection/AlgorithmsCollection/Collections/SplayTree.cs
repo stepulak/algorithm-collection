@@ -40,10 +40,29 @@ namespace AlgorithmsCollection
         {
             private Node node;
 
+            /// <summary>
+            /// Reference to node's parent.
+            /// </summary>
             public ReadOnlyNode? Parent => Create(node.Parent);
+
+            /// <summary>
+            /// Reference to node's left descendant.
+            /// </summary>
             public ReadOnlyNode? Left => Create(node.Left);
+
+            /// <summary>
+            /// Reference to node's right descendant.
+            /// </summary>
             public ReadOnlyNode? Right => Create(node.Right);
+
+            /// <summary>
+            /// Node's key.
+            /// </summary>
             public TKey Key => node.Key;
+
+            /// <summary>
+            /// Node's value.
+            /// </summary>
             public TValue Value
             {
                 get

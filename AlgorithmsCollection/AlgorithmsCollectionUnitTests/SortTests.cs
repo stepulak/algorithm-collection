@@ -162,12 +162,12 @@ namespace AlgorithmsCollectionUnitTests
         {
             {
                 var array = new int[] { 100, 200 };
-                Sort.QuickSortClassic(array, Comparer<int>.Default);
+                Sort.QuickSortClassic(array);
                 Assert.IsTrue(TestHelper.IsSortedAscending(array));
             }
             {
                 var array = new int[] { 10, 5, 66, -50, 1, 2, 23, -66 };
-                Sort.QuickSortClassic(array, Comparer<int>.Default);
+                Sort.QuickSortClassic(array);
                 Assert.IsTrue(TestHelper.IsSortedAscending(array));
             }
             {
@@ -177,7 +177,7 @@ namespace AlgorithmsCollectionUnitTests
                 {
                     array[i] = random.Next();
                 }
-                Sort.QuickSortClassic(array, Comparer<int>.Default);
+                Sort.QuickSortClassic(array);
                 Assert.IsTrue(TestHelper.IsSortedAscending(array));
             }
         }
@@ -187,12 +187,12 @@ namespace AlgorithmsCollectionUnitTests
         {
             {
                 var array = new int[] { -1 };
-                Sort.QuickSortClassic(array, Comparer<int>.Default);
+                Sort.QuickSortClassic(array);
                 Assert.IsTrue(TestHelper.IsSortedAscending(array));
             }
             {
                 var array = new int[] { 100, 555, 487, -4874, 1657, 1546, 0, 11, 22 };
-                Sort.QuickSortClassic(array, Comparer<int>.Default);
+                Sort.QuickSortClassic(array);
                 Assert.IsTrue(TestHelper.IsSortedAscending(array));
             }
         }
@@ -209,7 +209,7 @@ namespace AlgorithmsCollectionUnitTests
         public void QuickSortClassicFloat()
         {
             var array = new float[] { -12.4f, -666.0f, 873.0f, 31.678f, 763.5f };
-            Sort.QuickSortClassic(array, Comparer<float>.Default);
+            Sort.QuickSortClassic(array);
             Assert.IsTrue(TestHelper.IsSortedAscending(array));
         }
 

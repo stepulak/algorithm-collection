@@ -9,7 +9,7 @@ using System.Collections;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Connection definition between two nodes
+    /// Connection definition between two nodes. Used for graph creation.
     /// </summary>
     public class GraphConnection : Tuple<int, int, double>
     {
@@ -19,6 +19,10 @@ namespace AlgorithmsCollection
         }
     }
 
+    /// <summary>
+    /// Generic oriented and weighted graph data structure.
+    /// </summary>
+    /// <typeparam name="T">Type of value</typeparam>
     public class Graph<T> // IEnumerable<T>, ICollection<T> not used knowingly
     {
         private enum NodeColor
@@ -54,13 +58,31 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Graph's Edge class representation (source, target, length).
+        /// </summary>
         public class Edge
         {
             private static long IdCounter = 0;
 
+            /// <summary>
+            /// Unique id for all edges.
+            /// </summary>
             public long Id { get; }
+
+            /// <summary>
+            /// Length (weight) of this edge.
+            /// </summary>
             public double Length { get; }
+
+            /// <summary>
+            /// Source node.
+            /// </summary>
             public ReadOnlyNode NodeFrom { get; }
+
+            /// <summary>
+            /// Target node.
+            /// </summary>
             public ReadOnlyNode NodeTo { get; }
 
             public Edge(double length, ReadOnlyNode nodeFrom, ReadOnlyNode nodeTo)
@@ -82,16 +104,35 @@ namespace AlgorithmsCollection
         {
             private Node node;
             
+            /// <summary>
+            /// Node's value.
+            /// </summary>
             public T Value
             {
                 get { return node.Value; }
                 set { node.Value = value; }
             }
+
+            /// <summary>
+            /// Collection of edges ingoing to this node.
+            /// </summary>
             public ReadOnlyCollection<Edge> InEdges => new ReadOnlyCollection<Edge>(node.InEdges);
+
+            /// <summary>
+            /// Collection of edges outgoing from this node.
+            /// </summary>
             public ReadOnlyCollection<Edge> OutEdges => new ReadOnlyCollection<Edge>(node.OutEdges);
+
+            /// <summary>
+            /// Node's distance from starting node. Only if BFS/DFS/Dijkstra/Bellman-Ford algorithm has ran.
+            /// </summary>
             public double Distance => node.Distance;
+
+            /// <summary>
+            /// Reference to previous (parent) node during BFS/DFS/Dijkstra/Bellman-Ford algorithm.
+            /// </summary>
             public ReadOnlyNode? PreviousNode => Create(node.PreviousNode);
-            public object ThisNode => node; // We need to hide Node class
+            public object ThisNode => node;
 
             public static ReadOnlyNode? Create(object node)
             {
@@ -105,13 +146,28 @@ namespace AlgorithmsCollection
         
         private List<Node> nodes = new List<Node>();
 
+        /// <summary>
+        /// Number of nodes in graph.
+        /// </summary>
         public int Count => nodes.Count;
+
+        /// <summary>
+        /// If graph has been already searched (traversed).
+        /// </summary>
         public bool Traversed { get; private set; } = false;
 
+        /// <summary>
+        /// Default empty graph constructor.
+        /// </summary>
         public Graph()
         {
         }
 
+        /// <summary>
+        /// Create graph from connection matrix and list of node's values.
+        /// </summary>
+        /// <param name="connectionMatrix">Matrix of edges in graph. Zero value means no edge.</param>
+        /// <param name="nodes">List of node's values. Must be sorted according to position in connection matrix.</param>
         public Graph(double[,] connectionMatrix, List<T> nodes)
         {
             if (connectionMatrix == null)
@@ -133,6 +189,11 @@ namespace AlgorithmsCollection
             CreateFromConnectionMatrix(connectionMatrix, nodes);
         }
 
+        /// <summary>
+        /// Create graph from connection list and list of node's values.
+        /// </summary>
+        /// <param name="connectionList">List of connections between nodes</param>
+        /// <param name="nodes">List of node's values</param>
         public Graph(List<GraphConnection> connectionList, List<T> nodes)
         {
             if (connectionList == null)
@@ -150,6 +211,11 @@ namespace AlgorithmsCollection
             CreateFromConnectionList(connectionList, nodes);
         }
 
+        /// <summary>
+        /// Get node at given index.
+        /// </summary>
+        /// <param name="index">Node's index</param>
+        /// <returns>Node at given index</returns>
         public ReadOnlyNode this[int index]
         {
             get
@@ -162,9 +228,25 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Get value from node at given index.
+        /// </summary>
+        /// <param name="index">Node's index</param>
+        /// <returns>Values from node at given index</returns>
         public T ValueAt(int index) => this[index].Value;
+
+        /// <summary>
+        /// Return index of given node in graph.
+        /// </summary>
+        /// <param name="readOnlyNode">Node to find out an index in graph</param>
+        /// <returns>Index of given node</returns>
         public int GetIndex(ReadOnlyNode readOnlyNode) => nodes.FindIndex(node => node.Id == (readOnlyNode.ThisNode as Node).Id);
 
+        /// <summary>
+        /// Find index of node's value that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>Index of node's value that match predicate, otherwise -1 if no node is found</returns>
         public int FindIndex(Predicate<T> predicate)
         {
             if (predicate == null)
@@ -174,6 +256,11 @@ namespace AlgorithmsCollection
             return nodes.FindIndex(node => predicate(node.Value));
         }
 
+        /// <summary>
+        /// Find node that it's value match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>Node that it's value match given predicate, otherwise null if no node is found</returns>
         public ReadOnlyNode? FindNode(Predicate<T> predicate)
         {
             var index = FindIndex(predicate);
@@ -184,6 +271,11 @@ namespace AlgorithmsCollection
             return null;
         }
 
+        /// <summary>
+        /// Add value to graph and create node for it.
+        /// </summary>
+        /// <param name="value">Value to add</param>
+        /// <returns>Node created for this value</returns>
         public ReadOnlyNode AddNode(T value)
         {
             var node = new Node(value);
@@ -191,8 +283,22 @@ namespace AlgorithmsCollection
             return ReadOnlyNode.Create(node).Value;
         }
 
+        /// <summary>
+        /// Add edge to graph.
+        /// </summary>
+        /// <param name="nodeFrom">Index of source node</param>
+        /// <param name="nodeTo">Index of target node</param>
+        /// <param name="length">Length (weight) of edge</param>
+        /// <returns>Edge added to the graph</returns>
         public Edge AddEdge(int nodeFrom, int nodeTo, double length) => AddEdge(this[nodeFrom], this[nodeTo], length);
 
+        /// <summary>
+        /// Add edge to graph.
+        /// </summary>
+        /// <param name="nodeFrom">Source node</param>
+        /// <param name="nodeTo">Target node</param>
+        /// <param name="length">Length (weight) of node</param>
+        /// <returns>Edge added to the graph</returns>
         public Edge AddEdge(ReadOnlyNode nodeFrom, ReadOnlyNode nodeTo, double length)
         {
             var edge = new Edge(length, nodeFrom, nodeTo);
@@ -201,15 +307,32 @@ namespace AlgorithmsCollection
             return edge;
         }
         
+        /// <summary>
+        /// Remove all nodes and edges from graph.
+        /// </summary>
         public void Clear()
         {
             nodes.Clear();
         }
 
+        /// <summary>
+        /// Remove node at given index with all it's in/out going edges.
+        /// </summary>
+        /// <param name="index">Index of node to remove</param>
         public void RemoveNode(int index) => RemoveNode(this[index]);
+
+        /// <summary>
+        /// Remove given node from graph with all it's in/out going edges.
+        /// </summary>
+        /// <param name="readOnlyNode">Node to remove</param>
         public void RemoveNode(ReadOnlyNode readOnlyNode) => RemoveNode(node => (node.ThisNode as Node).Id == (readOnlyNode.ThisNode as Node).Id);
 
-        public void RemoveNode(Predicate<ReadOnlyNode> predicate)
+        /// <summary>
+        /// Remove first node that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
+        /// <returns>True if any node was removed, false otherwise</returns>
+        public bool RemoveNode(Predicate<ReadOnlyNode> predicate)
         {
             if (predicate == null)
             {
@@ -220,9 +343,15 @@ namespace AlgorithmsCollection
             {
                 RemoveAllEdgesConnectedToNode(nodes[index]);
                 nodes.RemoveAt(index);
+                return true;
             }
+            return false;
         }
 
+        /// <summary>
+        /// Remove all nodes that match given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate to match</param>
         public void RemoveAllNodes(Predicate<ReadOnlyNode> predicate)
         {
             if (predicate == null)
@@ -231,7 +360,11 @@ namespace AlgorithmsCollection
             }
             nodes.RemoveAll(node => predicate(ReadOnlyNode.Create(node).Value));
         }
-    
+
+        /// <summary>
+        /// Remove edge from graph.
+        /// </summary>
+        /// <param name="edge">Edge to remove</param>
         public void RemoveEdge(Edge edge)
         {
             if (edge == null)
@@ -251,6 +384,10 @@ namespace AlgorithmsCollection
             nodeTo.InEdges.RemoveAt(indexTo);
         }
 
+        /// <summary>
+        /// Count number connectivity components in graph using BFS.
+        /// </summary>
+        /// <returns>Number of connectivity components in graph</returns>
         public int NumberOfConnectivityComponents()
         {
             PrepareForGraphTraverse();
@@ -267,6 +404,10 @@ namespace AlgorithmsCollection
             return componentsCounter;
         }
 
+        /// <summary>
+        /// Check whether graph contains a cycle (using DFS).
+        /// </summary>
+        /// <returns>True whether graph containst cycle, false otherwise</returns>
         public bool ContainsCycle()
         {
             PrepareForGraphTraverse();
@@ -288,20 +429,35 @@ namespace AlgorithmsCollection
             return cycleDetected;
         }
 
-        public List<Edge> KruskalMinimalSpanningTree()
+        /// <summary>
+        /// Count minimum spanning tree using Jarnik (Prim) algorithm.
+        /// </summary>
+        /// <returns>List of edges that make minimum spanning tree</returns>
+        public List<Edge> JarnikMinimumSpannigTree()
         {
             if (NumberOfConnectivityComponents() > 1)
             {
-                throw new InvalidOperationException("Unable to perform Kruskal's algorithm on graph with more than one connectivity component");
+                throw new InvalidOperationException("Unable to perform Jarnik's algorithm on graph with more than one connectivity component");
             }
-            int singleTreeCounter = 0;
+            if (Count == 0)
+            {
+                throw new InvalidOperationException("Unable to perform Jarnik's algorithm on graph with no nodes");
+            }
+            Dijkstra(this[0]);
+            var spanningTree = new List<Edge>();
             foreach (var node in nodes)
             {
-                node.ProgramData = singleTreeCounter++;
+                var from = ReadOnlyNode.Create(node.PreviousNode).Value;
+                var to = ReadOnlyNode.Create(node).Value;
+                spanningTree.Add(new Edge(node.Distance, from, to));
             }
-            return KruskalImpl(GetSortedEdgesByLength());
+            return spanningTree;
         }
 
+        /// <summary>
+        /// Run Bellman-Ford algorithm and count minimum distance from given node.
+        /// </summary>
+        /// <param name="startNode">Starting node</param>
         public void BellmanFord(ReadOnlyNode startNode)
         {
             if (NumberOfConnectivityComponents() > 1)
@@ -312,21 +468,21 @@ namespace AlgorithmsCollection
             BellmanFordImpl(startNode.ThisNode as Node);
         }
 
+        /// <summary>
+        /// Run Dijkstra algorithm and count minimum distance from givennode
+        /// </summary>
+        /// <param name="startNode">Starting node</param>
         public void Dijkstra(ReadOnlyNode startNode)
         {
             PrepareForGraphTraverse();
-            var comparer = Comparer<Node>.Create((a, b) => {
-                if (a.Distance < b.Distance) return -1;
-                if (b.Distance < a.Distance) return 1;
-                return 0;
-            });
-            var notifier = new BinaryHeap<Node>.ChangeIndexNotifier((node, newIndex) => {
-                // We need to track indices
-                node.ProgramData = newIndex;
-            });
-            DijkstraImpl(new BinaryHeap<Node>(comparer, notifier), startNode.ThisNode as Node);
+            DijkstraImpl(startNode.ThisNode as Node, EdgeRelax);
         }
 
+        /// <summary>
+        /// Run DFS (Depth first search) algorithm.
+        /// </summary>
+        /// <param name="startNode">Starting node</param>
+        /// <param name="map">Node's mapping function</param>
         public void DFS(ReadOnlyNode startNode, Action<ReadOnlyNode> map)
         {
             PrepareForGraphTraverse();
@@ -335,24 +491,36 @@ namespace AlgorithmsCollection
             DFSRecursive(start, null, map);
         }
 
+        /// <summary>
+        /// Run BFS (Breadth first search) algorithm.
+        /// </summary>
+        /// <param name="startNode">Starting node</param>
+        /// <param name="map">Node's mapping function</param>
         public void BFS(ReadOnlyNode startNode, Action<ReadOnlyNode> map)
         {
             PrepareForGraphTraverse();
             BFSImpl(startNode, map);
         }
 
+        /// <summary>
+        /// Clear traversing statistics (Distance, PreviousNode properties etc.).
+        /// </summary>
         public void ClearTraversingStats()
         {
             Traversed = false;
             foreach (var node in nodes)
             {
                 node.Color = NodeColor.White;
-                node.Distance = long.MaxValue;
+                node.Distance = double.MaxValue;
                 node.PreviousNode = null;
                 node.ProgramData = null;
             }
         }
 
+        /// <summary>
+        /// Get all values from graph.
+        /// </summary>
+        /// <returns>Values enumerable</returns>
         public IEnumerable<T> Values()
         {
             foreach (var node in nodes)
@@ -407,9 +575,21 @@ namespace AlgorithmsCollection
         private bool EdgeRelax(Node node, Edge edge)
         {
             var target = edge.NodeTo.ThisNode as Node;
-            if (target.Distance == long.MaxValue || (dynamic)node.Distance + edge.Length < target.Distance)
+            if ((dynamic)node.Distance + edge.Length < target.Distance)
             {
                 target.Distance = (dynamic)node.Distance + edge.Length;
+                target.PreviousNode = node;
+                return true;
+            }
+            return false;
+        }
+
+        private bool EdgeRelaxJarnik(Node node, Edge edge)
+        {
+            var target = edge.NodeTo.ThisNode as Node;
+            if (edge.Length < target.Distance)
+            {
+                target.Distance = edge.Length;
                 target.PreviousNode = node;
                 return true;
             }
@@ -432,7 +612,7 @@ namespace AlgorithmsCollection
             {
                 foreach (var node in nodes)
                 {
-                    if (node.Distance < long.MaxValue)
+                    if (node.Distance < double.MaxValue)
                     {
                         foreach (var edge in node.OutEdges)
                         {
@@ -451,7 +631,7 @@ namespace AlgorithmsCollection
         {
             foreach (var node in nodes)
             {
-                if (node.Distance < long.MaxValue)
+                if (node.Distance < double.MaxValue)
                 {
                     foreach (var edge in node.OutEdges)
                     {
@@ -465,20 +645,21 @@ namespace AlgorithmsCollection
             return false;
         }
 
-        private void DijkstraImpl(BinaryHeap<Node> heap, Node start)
+        private void DijkstraImpl(Node start, Func<Node, Edge, bool> relaxationFunc)
         {
+            var heap = new BinaryHeap<Node>(CreateNodeDistanceComparer(), CreateBinaryHeapChangeIndexNotifier());
             start.Distance = 0;
             heap.PushRange(nodes);
             while (heap.Count > 0)
             {
                 var node = heap.Pop();
-                if (node.Distance == long.MaxValue)
+                if (node.Distance == double.MaxValue)
                 {
                     break; // cannot continue, not accessible
                 }
                 foreach (var edge in node.OutEdges)
                 {
-                    if (EdgeRelax(node, edge))
+                    if (relaxationFunc.Invoke(node, edge))
                     {
                         var target = edge.NodeTo.ThisNode as Node;
                         heap.ReplacedOnIndex((int)target.ProgramData);
@@ -532,47 +713,17 @@ namespace AlgorithmsCollection
                 }
             }
         }
-
-        private List<Edge> KruskalImpl(List<Edge> edges)
-        {
-            var spanningTree = new List<Edge>();
-            foreach (var edge in edges)
-            {
-                var node1 = edge.NodeFrom.ThisNode as Node;
-                var node2 = edge.NodeTo.ThisNode as Node;
-                var id1 = (int)node1.ProgramData;
-                var id2 = (int)node2.ProgramData;
-                if (id1 != id2) // Two different trees
-                {
-                    // Join them by first tree's id
-                    foreach (var node in nodes)
-                    {
-                        if ((int)node.ProgramData == id2)
-                        {
-                            node.ProgramData = id1;
-                        }
-                    }
-                    spanningTree.Add(edge);
-                }
-            }
-            return spanningTree;
-        }
         
-        private List<Edge> GetSortedEdgesByLength()
+        private static IComparer<Node> CreateNodeDistanceComparer()
         {
-            var edges = new List<Edge>();
-            foreach (var node in nodes)
-            {
-                foreach (var edge in node.OutEdges)
-                {
-                    edges.Add(edge);
-                }
-            }
-            edges.Sort((edge1, edge2) => {
-                if ((dynamic)edge1.Length < edge2.Length) return -1;
-                return 1;
+            return Comparer<Node>.Create((a, b) => {
+                if (a.Distance < b.Distance) return -1;
+                if (b.Distance < a.Distance) return 1;
+                return 0;
             });
-            return edges;
         }
+
+        private static BinaryHeap<Node>.ChangeIndexNotifier CreateBinaryHeapChangeIndexNotifier() =>
+            new BinaryHeap<Node>.ChangeIndexNotifier((node, newIndex) => node.ProgramData = newIndex);
     }
 }
