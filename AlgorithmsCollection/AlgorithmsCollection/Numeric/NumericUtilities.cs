@@ -14,9 +14,10 @@ namespace AlgorithmsCollection
 
             public FloatNumberEqualityCmp()
             {
-                if (typeof(T) != typeof(double) && typeof(T) != typeof(float))
+                var type = typeof(T);
+                if (type != typeof(double) && type != typeof(float))
                 {
-                    throw new Exception("Invalid template parameter, must be double or float");
+                    throw new Exception("Invalid template parameter, must be double or float.");
                 }
             }
 
@@ -33,34 +34,50 @@ namespace AlgorithmsCollection
 
         private const double Epsillon = 0.00001;
 
+        /// <summary>
+        /// Compare two double values for their equality.
+        /// </summary>
+        /// <param name="value1">First value</param>
+        /// <param name="value2">Second value</param>
+        /// <returns>True if two values are (approximately) equal, false otherwise.</returns>
         public static bool DoubleCompare(double value1, double value2)
         {
             return Math.Abs(value1 - value2) < Epsillon;
         }
-        
-        public static bool IsPrime(uint a)
+
+        /// <summary>
+        /// Check whether given number is a prime number.
+        /// </summary>
+        /// <param name="num">Number to check</param>
+        /// <returns>True if given number is prime number, false otherwise</returns>
+        public static bool IsPrime(uint num)
         {
-            if (a == 0 || a == 1)
+            if (num == 0 || num == 1)
             {
                 return false;
             }
             // Check 6k+1 primes
-            if (a != 2 && a != 3 && (a % 2 == 0 || a % 3 == 0))
+            if (num != 2 && num != 3 && (num % 2 == 0 || num % 3 == 0))
             {
                 return false;
             }
-            var limit = (int)Math.Ceiling(Math.Sqrt(a));
+            var limit = (int)Math.Ceiling(Math.Sqrt(num));
             for (uint i = 5u; i <= limit; i+=2)
             {
-                if (a % i == 0)
+                if (num % i == 0)
                 {
                     return false;
                 }
             }
             return true;
         }
-
-        // GCD is also defined on negative numbers aswell
+        
+        /// <summary>
+        /// Count GCD for two numbers. Working well with negative values aswell.
+        /// </summary>
+        /// <param name="a">First number</param>
+        /// <param name="b">Second number</param>
+        /// <returns>GCD of two values</returns>
         public static int GreatestCommonDivisor(int a, int b)
         {
             if (a == 0)
@@ -78,9 +95,19 @@ namespace AlgorithmsCollection
             return a;
         }
 
+        /// <summary>
+        /// Count LCM for two numbers. Only for unsigned numbers.
+        /// </summary>
+        /// <param name="a">First number</param>
+        /// <param name="b">Second number</param>
+        /// <returns>LCM of two values</returns>
         public static uint LeastCommonMultiple(uint a, uint b) => a * b / (uint) GreatestCommonDivisor((int) a, (int) b);
-
-        // Iterative non-lazy implementation
+        
+        /// <summary>
+        /// Count Eratosthene sieve.
+        /// </summary>
+        /// <param name="maxValue">Maximum value of prime number</param>
+        /// <returns>List of prime numbers less than maxValue</returns>
         public static List<uint> EratosthenesSieve(uint maxValue)
         {
             var numbers = new List<uint>();
@@ -96,6 +123,13 @@ namespace AlgorithmsCollection
             return numbers;
         }
 
+        /// <summary>
+        /// Solve modulo of value with exponent (value^exponent % modulo).
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <param name="exponent">Exponent of value</param>
+        /// <param name="modulo">Modulo</param>
+        /// <returns>Result of value^exponent % modulo expression</returns>
         public static uint SolveModulo(uint value, uint exponent, uint modulo)
         {
             var result = value % modulo;
@@ -106,6 +140,11 @@ namespace AlgorithmsCollection
             return result;
         }
 
+        /// <summary>
+        /// Create comparer for float numbers (float, double).
+        /// </summary>
+        /// <typeparam name="T">Type of float number (float, double)</typeparam>
+        /// <returns>Comparer for float numbers</returns>
         public static Comparer<T> FloatNumberComparer<T>()
         {
             return Comparer<T>.Create(new Comparison<T>((a, b) =>
@@ -122,6 +161,11 @@ namespace AlgorithmsCollection
             }));
         }
 
+        /// <summary>
+        /// Create equality comparer for float numbers (float, double).
+        /// </summary>
+        /// <typeparam name="T">Type of float number (float, double)</typeparam>
+        /// <returns>Equality comparer for float numbers</returns>
         public static IEqualityComparer<T> FloatNumberEqualityComparer<T>()
         {
             return new FloatNumberEqualityCmp<T>();

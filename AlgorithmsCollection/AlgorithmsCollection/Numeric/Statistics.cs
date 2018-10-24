@@ -7,23 +7,50 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Struct that represents weighted value.
+    /// </summary>
     public struct WeightedValue
     {
         public double Weight { get; set; }
         public double Value { get; set; }
     }
 
+    /// <summary>
+    /// Static class with various statistics methods.
+    /// </summary>
     public static class Statistics
     {
+        /// <summary>
+        /// Count expected (average) value of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Expected (average) value of given list</returns>
         public static double ExpectedValue(List<double> values) => AverageValue(values);
+
+        /// <summary>
+        /// Count expected (average) value of given list.
+        /// </summary>
+        /// <param name="values">List of weighted values</param>
+        /// <returns>Expected (average) value of given list</returns>
         public static double ExpectedValue(List<WeightedValue> values) => AverageValue(values);
         
+        /// <summary>
+        /// Count average (expected) value of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Average (expected) value of given list</returns>
         public static double AverageValue(List<double> values)
         {
             TestEmptyOrNullValuesThrow(values);
             return values.Average();
         }
 
+        /// <summary>
+        /// Count average (expected) value of given list.
+        /// </summary>
+        /// <param name="values">List of weighted values</param>
+        /// <returns>Average (expected) value of given list</returns>
         public static double AverageValue(List<WeightedValue> values)
         {
             TestEmptyOrNullValuesThrow(values);
@@ -114,13 +141,13 @@ namespace AlgorithmsCollection
             return result;
         }
 
-        public static void LinearRegression(List<KeyValuePair<int, double>> values, out double slope, out double offset)
+        public static void LinearRegression(List<KeyValuePair<int, double>> values, out double slope, out double intercept)
         {
             TestEmptyOrNullValuesThrow(values);
             var valuesX = values.Select(pair => (double)pair.Key).ToList();
             var valuesY = values.Select(pair => pair.Value).ToList();
             slope = Covariance(valuesX, valuesY) / Variance(valuesX);
-            offset = AverageValue(valuesY) - slope * AverageValue(valuesX);
+            intercept = AverageValue(valuesY) - slope * AverageValue(valuesX);
         }
         
         private static void TestEmptyOrNullValuesThrow<T>(List<T> values)
