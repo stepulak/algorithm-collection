@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Possible results of Gauss elimination.
+    /// </summary>
     public enum GaussEliminationResultType
     {
         ValidResult,
@@ -14,14 +17,30 @@ namespace AlgorithmsCollection
         InfinityResults,
     };
 
+    /// <summary>
+    /// Templated rectangular matrix data type.
+    /// </summary>
+    /// <typeparam name="T">Type of value in matrix</typeparam>
     public class Matrix<T> : IEnumerable<T>
         where T : struct
     {
         private T[,] matrix;
 
+        /// <summary>
+        /// Number of rows in matrix (Y).
+        /// </summary>
         public int Rows { get; }
+
+        /// <summary>
+        /// Number of columns in matrix (X).
+        /// </summary>
         public int Columns { get; }
 
+        /// <summary>
+        /// Construct matrix with given number of rows and columns.
+        /// </summary>
+        /// <param name="rows">Number of rows</param>
+        /// <param name="columns">Number of columns</param>
         public Matrix(int rows, int columns)
         {
             if (rows <= 0)
@@ -37,6 +56,10 @@ namespace AlgorithmsCollection
             matrix = new T[rows, columns];
         }
 
+        /// <summary>
+        /// Construct matrix from given values. Rows and columns are inherited from values dimensions.
+        /// </summary>
+        /// <param name="values">Array of values</param>
         public Matrix(T[,] values) : this(values.GetLength(0), values.GetLength(1))
         {
             for (int i = 0; i < Rows; i++)
@@ -48,12 +71,24 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Construct matrix from other matrix (deep copy).
+        /// </summary>
+        /// <param name="from">Matrix origin</param>
         public Matrix(Matrix<T> from) : this(from.matrix)
         {
         }
 
+        /// <summary>
+        /// Return matrix as array.
+        /// </summary>
+        /// <returns>Matrix as array</returns>
         public T[,] GetMatrix() => matrix;
 
+        /// <summary>
+        /// Return transposed matrix.
+        /// </summary>
+        /// <returns>Transposed matrix</returns>
         public Matrix<T> Transpose()
         {
             var result = new Matrix<T>(Columns, Rows);
@@ -67,6 +102,11 @@ namespace AlgorithmsCollection
             return result;
         }
         
+        /// <summary>
+        /// Copy list of values into specific row in matrix.
+        /// </summary>
+        /// <param name="rowIndex">Row index in matrix</param>
+        /// <param name="values">List of values</param>
         public void SetRow(int rowIndex, List<T> values)
         {
             if (values.Count != Columns)
@@ -79,6 +119,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Copy list of values into specific column in matrix.
+        /// </summary>
+        /// <param name="columnIndex">Column index in matrix</param>
+        /// <param name="values">List of values</param>
         public void SetColumn(int columnIndex, List<T> values)
         {
             if (values.Count != Rows)
@@ -91,6 +136,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Get row at given index.
+        /// </summary>
+        /// <param name="rowIndex">Row index in matrix</param>
+        /// <returns>Row at given index</returns>
         public IEnumerable<T> GetRow(int rowIndex)
         {
             if (rowIndex < 0 || rowIndex >= Rows)
@@ -103,6 +153,11 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Get column at given index.
+        /// </summary>
+        /// <param name="columnIndex">Column index in matrix</param>
+        /// <returns>Column at given index</returns>
         public IEnumerable<T> GetColumn(int columnIndex)
         {
             if (columnIndex < 0 || columnIndex >= Columns)
@@ -115,6 +170,12 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Get value at given position.
+        /// </summary>
+        /// <param name="row">Row index</param>
+        /// <param name="column">Column index</param>
+        /// <returns>Value at give position</returns>
         public T this[int row, int column]
         {
             get
@@ -131,6 +192,12 @@ namespace AlgorithmsCollection
             }
         }
 
+        /// <summary>
+        /// Perform gauss elimination. Each row in matrix is an equation.
+        /// Each column is a list of coefficients for one variable.
+        /// </summary>
+        /// <param name="result">List of results</param>
+        /// <returns>Gauss elimination result type</returns>
         public GaussEliminationResultType GaussElimination(out List<double> result)
         {
             if (Rows + 1 != Columns || Rows <= 1)

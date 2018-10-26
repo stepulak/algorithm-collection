@@ -57,9 +57,19 @@ namespace AlgorithmsCollection
             var sumWeights = GetWeightsSumThrowIfZero(values);
             return values.Aggregate(0.0, (prev, current) => prev + current.Weight * current.Value) / sumWeights;
         }
-
-        // I am just a lazy programmer, could be simplified and rewritten
+        
+        /// <summary>
+        /// Count variance of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Variance of given list</returns>
         public static double Variance(List<double> values) => Covariance(values, values);
+
+        /// <summary>
+        /// Count variance of given list.
+        /// </summary>
+        /// <param name="values">List of weighted values</param>
+        /// <returns>Variance of given list</returns>
         public static double Variance(List<WeightedValue> values)
         {
             var sameWeightedValues = values
@@ -71,9 +81,26 @@ namespace AlgorithmsCollection
             return Covariance(values, sameWeightedValues);
         }
 
+        /// <summary>
+        /// Count standard error of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Standard error of given list</returns>
         public static double StandardError(List<double> values) => Math.Sqrt(Variance(values));
+
+        /// <summary>
+        /// Count standard error of given list.
+        /// </summary>
+        /// <param name="values">List of weighted values</param>
+        /// <returns>Standard error of given list</returns>
         public static double StandardError(List<WeightedValue> values) => Math.Sqrt(Variance(values));
 
+        /// <summary>
+        /// Count covariance between two given lists with same length.
+        /// </summary>
+        /// <param name="valuesX">List of X values</param>
+        /// <param name="valuesY">List of Y values</param>
+        /// <returns>Covariance between values X and Y</returns>
         public static double Covariance(List<double> valuesX, List<double> valuesY)
         {
             TestValuesForCovarianceThrow(valuesX, valuesY);
@@ -82,14 +109,31 @@ namespace AlgorithmsCollection
             return CovarianceImpl(transformedX, transformedY);
         }
 
+        /// <summary>
+        /// Count covariance between two given lists with same length.
+        /// </summary>
+        /// <param name="valuesX">List of weighted X values</param>
+        /// <param name="valuesY">List of weighted Y values</param>
+        /// <returns>Covariance between weighted values X and Y</returns>
         public static double Covariance(List<WeightedValue> valuesX, List<WeightedValue> valuesY)
         {
             TestValuesForCovarianceThrow(valuesX, valuesY);
             return CovarianceImpl(valuesX, valuesY);
         }
 
+        /// <summary>
+        /// Count corellation between two given lists with same length.
+        /// </summary>
+        /// <param name="valuesX">List of X values</param>
+        /// <param name="valuesY">List of Y values</param>
+        /// <returns>Corellation between values X and Y</returns>
         public static double Corellation(List<double> valuesX, List<double> valuesY) => Covariance(valuesX, valuesY) / (StandardError(valuesX) * StandardError(valuesY));
 
+        /// <summary>
+        /// Get median of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Median of given list</returns>
         public static double Median(List<double> values)
         {
             TestEmptyOrNullValuesThrow(values);
@@ -101,6 +145,11 @@ namespace AlgorithmsCollection
             return (values[middle - 1] + values[middle]) / 2.0;
         }
 
+        /// <summary>
+        /// Get modus of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <returns>Modus of given list</returns>
         public static double Modus(List<double> values)
         {
             TestEmptyOrNullValuesThrow(values);
@@ -115,6 +164,12 @@ namespace AlgorithmsCollection
                 .First().Key;
         }
 
+        /// <summary>
+        /// Count windowed moving average of given list.
+        /// </summary>
+        /// <param name="values">List of values</param>
+        /// <param name="window">Size of floating window</param>
+        /// <returns>Moving average from given list</returns>
         public static List<double> MovingAverage(List<double> values, uint window)
         {
             TestEmptyOrNullValuesThrow(values);
@@ -141,6 +196,12 @@ namespace AlgorithmsCollection
             return result;
         }
 
+        /// <summary>
+        /// Count linear regression (y = slope * x + intercept) from given list.
+        /// </summary>
+        /// <param name="values">List of pairs of index+value</param>
+        /// <param name="slope">Slope result</param>
+        /// <param name="intercept">Intercept result</param>
         public static void LinearRegression(List<KeyValuePair<int, double>> values, out double slope, out double intercept)
         {
             TestEmptyOrNullValuesThrow(values);

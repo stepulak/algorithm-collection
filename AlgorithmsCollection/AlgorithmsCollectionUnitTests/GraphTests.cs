@@ -368,6 +368,7 @@ namespace AlgorithmsCollectionUnitTests
         public void GraphDFS()
         {
             var graph = CreateSampleGraphForTraversing();
+            graph.AddEdge(3, 4, -2);
             var visitedList = new List<Tuple<char, double>>();
             graph.DFS(graph[0], node => visitedList.Add(new Tuple<char, double>(node.Value, node.Distance)));
             Assert.IsTrue(graph.Traversed);
@@ -464,16 +465,16 @@ namespace AlgorithmsCollectionUnitTests
                 else if (edge1.Length > edge2.Length) return 1;
                 return 0;
             });
-            Assert.AreEqual(tree[0].NodeFrom.Value, 'd');
-            Assert.AreEqual(tree[0].NodeTo.Value, 'e');
-            /*Assert.AreEqual(tree[1].NodeFrom.Value, 'a');
-            Assert.AreEqual(tree[1].NodeTo.Value, 'b');
-            Assert.AreEqual(tree[2].NodeFrom.Value, 'a');
-            Assert.AreEqual(tree[2].NodeTo.Value, 'c');
-            Assert.AreEqual(tree[3].NodeFrom.Value, 'b');
-            Assert.AreEqual(tree[3].NodeTo.Value, 'e');
+            Assert.AreEqual(tree[0].NodeFrom.Value, 'a');
+            Assert.AreEqual(tree[0].NodeTo.Value, 'b');
+            Assert.AreEqual(tree[1].NodeFrom.Value, 'a');
+            Assert.AreEqual(tree[1].NodeTo.Value, 'c');
+            Assert.AreEqual(tree[2].NodeFrom.Value, 'b');
+            Assert.AreEqual(tree[2].NodeTo.Value, 'e');
+            Assert.AreEqual(tree[3].NodeFrom.Value, 'c');
+            Assert.AreEqual(tree[3].NodeTo.Value, 'd');
             Assert.AreEqual(tree[4].NodeFrom.Value, 'e');
-            Assert.AreEqual(tree[4].NodeTo.Value, 'f');*/
+            Assert.AreEqual(tree[4].NodeTo.Value, 'f');
         }
 
         [TestMethod]
@@ -585,7 +586,6 @@ namespace AlgorithmsCollectionUnitTests
             graph.AddEdge(1, 3, 7);
             graph.AddEdge(1, 4, 3);
             graph.AddEdge(2, 3, 5);
-            graph.AddEdge(3, 4, -2);
             graph.AddEdge(4, 5, 10);
             return graph;
         }

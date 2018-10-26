@@ -13,28 +13,28 @@ namespace AlgorithmsCollectionUnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void HeapSortArrayNull()
         {
-            Sort.HeapSort(null, Comparer<int>.Default);
+            Sort.HeapSort<int>(null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void HeapSortComparerNull()
         {
-            Sort.HeapSort(new int[] { }, null);
+            Sort.HeapSort<int>(new int[] { }, null);
         }
-
+        
         [TestMethod]
         public void HeapSortEmpty()
         {
             var array = new int[0] { };
-            Sort.HeapSort(array, Comparer<int>.Default);
+            Sort.HeapSort(array);
         }
 
         [TestMethod]
         public void HeapSortSimple()
         {
             var array = new int[] { 66, 42, 314, 22, 11, 13, 13, 0, -56, -69 };
-            Sort.HeapSort(array, Comparer<int>.Default);
+            Sort.HeapSort(array);
             Assert.IsTrue(TestHelper.IsSortedAscending(array));
         }
 
@@ -70,7 +70,7 @@ namespace AlgorithmsCollectionUnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void MergeSortArrayNull()
         {
-            Sort.MergeSort(null, Comparer<int>.Default);
+            Sort.MergeSort<double>(null);
         }
 
         [TestMethod]
@@ -83,14 +83,14 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void MergeSortArrayEmpty()
         {
-            Sort.MergeSort(new int[] { }, Comparer<int>.Default);
+            Sort.MergeSort(new int[] { });
         }
 
         [TestMethod]
         public void MergeSortOneElement()
         {
             var values = new int[] { 42 };
-            Sort.MergeSort(values, Comparer<int>.Default);
+            Sort.MergeSort(values);
             Assert.AreEqual(values[0], 42);
         }
 
@@ -99,12 +99,12 @@ namespace AlgorithmsCollectionUnitTests
         {
             {
                 var values = new int[] { 22, 11 };
-                Sort.MergeSort(values, Comparer<int>.Default);
+                Sort.MergeSort(values);
                 Assert.IsTrue(TestHelper.IsSortedAscending(values));
             }
             {
                 var values = new int[] { 3, 2, 56, -12, 5, 6 };
-                Sort.MergeSort(values, Comparer<int>.Default);
+                Sort.MergeSort(values);
                 Assert.IsTrue(TestHelper.IsSortedAscending(values));
             }
             {
@@ -119,7 +119,7 @@ namespace AlgorithmsCollectionUnitTests
         {
             {
                 var values = new int[] { 22, 11, 33 };
-                Sort.MergeSort(values, Comparer<int>.Default);
+                Sort.MergeSort(values);
                 Assert.IsTrue(TestHelper.IsSortedAscending(values));
             }
             {
@@ -141,7 +141,7 @@ namespace AlgorithmsCollectionUnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void QuickSortClassicNullArray()
         {
-            Sort.QuickSortClassic(null, Comparer<int>.Default);
+            Sort.QuickSortClassic<char>(null);
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void QuickSortClassicEmpty()
         {
-            Sort.QuickSortClassic(new int[0], Comparer<int>.Default);
+            Sort.QuickSortClassic(new int[0]);
         }
 
         [TestMethod]
@@ -217,7 +217,7 @@ namespace AlgorithmsCollectionUnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void QuickSortLinqNullCollection()
         {
-            Sort.QuickSortLinq(null, Comparer<int>.Default);
+            Sort.QuickSortLinq<int>(null);
         }
 
         [TestMethod]
@@ -230,21 +230,21 @@ namespace AlgorithmsCollectionUnitTests
         [TestMethod]
         public void QuickSortLinqEmpty()
         {
-            Sort.QuickSortLinq(new int[0], Comparer<int>.Default);
+            Sort.QuickSortLinq(new int[0]);
         }
 
         [TestMethod]
         public void QuickSortLinqOne()
         {
             var collection = new List<int> { 1 };
-            Assert.IsTrue(Enumerable.SequenceEqual(collection, Sort.QuickSortLinq(collection, Comparer<int>.Default)));
+            Assert.IsTrue(Enumerable.SequenceEqual(collection, Sort.QuickSortLinq(collection)));
         }
 
         [TestMethod]
         public void QuickSortLinqTwo()
         {
             var collection = new List<int> { 1, -5 };
-            Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection, Comparer<int>.Default)));
+            Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection)));
         }
 
         [TestMethod]
@@ -252,11 +252,11 @@ namespace AlgorithmsCollectionUnitTests
         {
             {
                 var collection = new List<int> { 11, 22, 42, 314, 666, 66, 100, -84, -11, -50, 13, 0, 1, 587, -8467, 0, 154, 15, 13 };
-                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection, Comparer<int>.Default)));
+                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection)));
             }
             {
                 var collection = new List<double> { -54.2, 66.6, 3.141592, 86.9, -54.2, 15, 13, 13, 0.12 };
-                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection, Comparer<double>.Default)));
+                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection)));
             }
         }
 
@@ -269,7 +269,7 @@ namespace AlgorithmsCollectionUnitTests
             }
             {
                 var collection = new List<bool> { false, false, true, true };
-                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection, Comparer<bool>.Default)));
+                Assert.IsTrue(TestHelper.IsSortedAscending(Sort.QuickSortLinq(collection)));
             }
         }
     }

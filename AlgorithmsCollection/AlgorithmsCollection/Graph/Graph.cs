@@ -443,15 +443,7 @@ namespace AlgorithmsCollection
             {
                 throw new InvalidOperationException("Unable to perform Jarnik's algorithm on graph with no nodes");
             }
-            Dijkstra(this[0]);
-            var spanningTree = new List<Edge>();
-            foreach (var node in nodes)
-            {
-                var from = ReadOnlyNode.Create(node.PreviousNode).Value;
-                var to = ReadOnlyNode.Create(node).Value;
-                spanningTree.Add(new Edge(node.Distance, from, to));
-            }
-            return spanningTree;
+            return JarnikImpl();
         }
 
         /// <summary>
@@ -714,6 +706,24 @@ namespace AlgorithmsCollection
             }
         }
         
+        private List<Edge> JarnikImpl()
+        {
+            PrepareForGraphTraverse();
+            DijkstraImpl(nodes[0], EdgeRelaxJarnik);
+            var spanningTree = new List<Edge>();
+            foreach (var node in nodes)
+            {
+                if (node.PreviousNode == null)
+                {
+                    continue;
+                }
+                var from = ReadOnlyNode.Create(node.PreviousNode).Value;
+                var to = ReadOnlyNode.Create(node).Value;
+                spanningTree.Add(new Edge(node.Distance, from, to));
+            }
+            return spanningTree;
+        }
+
         private static IComparer<Node> CreateNodeDistanceComparer()
         {
             return Comparer<Node>.Create((a, b) => {
