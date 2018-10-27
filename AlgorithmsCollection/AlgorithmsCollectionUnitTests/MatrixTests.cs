@@ -558,7 +558,7 @@ namespace AlgorithmsCollectionUnitTests
             var result = new MatrixNxN<double>(values1) / new MatrixNxN<double>(values2);
             Assert.IsTrue(result.SequenceEqual(Enumerable.Cast<double>(expectedValues), NumericUtilities.FloatNumberEqualityComparer<double>()));
         }
-
+        
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Matrix3x3ConstructorInvalidValuesSize()
@@ -571,6 +571,14 @@ namespace AlgorithmsCollectionUnitTests
         public void Matrix3x3ConstructorInvalidMatrixSize()
         {
             new Matrix3x3<int>(new Matrix<int>(1, 2));
+        }
+
+        [TestMethod]
+        public void Matrix3x3ConstructorEmpty()
+        {
+            var matrix = new Matrix3x3<int>();
+            Assert.AreEqual(matrix.Rows, 3);
+            Assert.AreEqual(matrix.Columns, 3);
         }
 
         [TestMethod]

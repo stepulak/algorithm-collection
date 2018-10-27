@@ -37,7 +37,7 @@ namespace AlgorithmsCollection
         public int Columns { get; }
 
         /// <summary>
-        /// Construct matrix with given number of rows and columns.
+        /// Create matrix with given number of rows and columns.
         /// </summary>
         /// <param name="rows">Number of rows</param>
         /// <param name="columns">Number of columns</param>
@@ -57,7 +57,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Construct matrix from given values. Rows and columns are inherited from values dimensions.
+        /// Create matrix from given values. Rows and columns are inherited from values dimensions.
         /// </summary>
         /// <param name="values">Array of values</param>
         public Matrix(T[,] values) : this(values.GetLength(0), values.GetLength(1))
@@ -72,9 +72,9 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Construct matrix from other matrix (deep copy).
+        /// Create matrix from other matrix (deep copy).
         /// </summary>
-        /// <param name="from">Matrix origin</param>
+        /// <param name="from">Original matrix</param>
         public Matrix(Matrix<T> from) : this(from.matrix)
         {
         }
@@ -196,6 +196,7 @@ namespace AlgorithmsCollection
         /// Perform gauss elimination. Each row in matrix is an equation.
         /// Each column is a list of coefficients for one variable.
         /// </summary>
+        /// <see cref="https://en.wikipedia.org/wiki/Gaussian_elimination"/>
         /// <param name="result">List of results</param>
         /// <returns>Gauss elimination result type</returns>
         public GaussEliminationResultType GaussElimination(out List<double> result)
@@ -217,11 +218,44 @@ namespace AlgorithmsCollection
             return resultType;
         }
 
+        /// <summary>
+        /// Count sum of two matrices with same proportions.
+        /// </summary>
+        /// <param name="mat1">Matrix A</param>
+        /// <param name="mat2">Matrix B</param>
+        /// <returns></returns>
         public static Matrix<T> operator +(Matrix<T> mat1, Matrix<T> mat2) => MatricesTransform(mat1, mat2, (value1, value2) => (dynamic)value1 + value2);
+
+        /// <summary>
+        /// Count subtract of two matrices with same proportions.
+        /// </summary>
+        /// <param name="mat1">Matrix A</param>
+        /// <param name="mat2">Matrix B</param>
+        /// <returns></returns>
         public static Matrix<T> operator -(Matrix<T> mat1, Matrix<T> mat2) => MatricesTransform(mat1, mat2, (value1, value2) => (dynamic)value1 - value2);
+
+        /// <summary>
+        /// Multiply matrix with value.
+        /// </summary>
+        /// <param name="matrix">Matrix</param>
+        /// <param name="value">Value</param>
+        /// <returns></returns>
         public static Matrix<T> operator *(Matrix<T> matrix, T value) => MatrixTransform(matrix, (matrixValue) => (dynamic)value * matrixValue);
+
+        /// <summary>
+        /// Multiply matrix with value.
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <param name="matrix">Matrix</param>
+        /// <returns></returns>
         public static Matrix<T> operator *(T value, Matrix<T> matrix) => matrix * value;
 
+        /// <summary>
+        /// Multiply two matrices.
+        /// </summary>
+        /// <param name="mat1">Matrix A</param>
+        /// <param name="mat2">Matrix B</param>
+        /// <returns></returns>
         public static Matrix<T> operator *(Matrix<T> mat1, Matrix<T> mat2)
         {
             if (mat1.Columns != mat2.Rows)

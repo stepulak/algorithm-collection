@@ -6,17 +6,40 @@ using System.Threading.Tasks;
 
 namespace AlgorithmsCollection
 {
+    /// <summary>
+    /// Templated square 3x3 matrix.
+    /// </summary>
+    /// <typeparam name="T">Type of value in matrix</typeparam>
     public class Matrix3x3<T> : MatrixNxN<T>
         where T : struct
     {
+        /// <summary>
+        /// Create empty matrix.
+        /// </summary>
+        public Matrix3x3() : base(3)
+        {
+        }
+
+        /// <summary>
+        /// Create matrix from given values. 
+        /// </summary>
+        /// <param name="values">Array of values</param>
         public Matrix3x3(T[,] values) : base(CheckValuesDimensions3x3(values))
         {
         }
 
+        /// <summary>
+        /// Create matrix from other matrix (deep copy).
+        /// </summary>
+        /// <param name="from">Original matrix</param>
         public Matrix3x3(Matrix<T> from) : this(from.GetMatrix())
         {
         }
 
+        /// <summary>
+        /// Count determinant using fast Sarrus rule.
+        /// </summary>
+        /// <returns>Determinant of matrix</returns>
         public T DeterminantSarrusRule()
         {
             var diagonal1 = (dynamic)this[0, 0] * this[1, 1] * this[2, 2];
