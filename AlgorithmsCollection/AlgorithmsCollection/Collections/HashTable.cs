@@ -10,11 +10,14 @@ namespace AlgorithmsCollection
     /// <summary>
     /// Generic hash table with linked list separate chaining.
     /// </summary>
-    /// <typeparam name="TKey">Key type of elements</typeparam>
-    /// <typeparam name="TValue">Value type of elements</typeparam>
+    /// <typeparam name="TKey">Element key type</typeparam>
+    /// <typeparam name="TValue">Element value type</typeparam>
     public class HashTable<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>
     {
         public const int TableSizeDefault = 1024;
+
+        private IEqualityComparer<TKey> Comparer { get; set; } = null;
+        private List<KeyValuePair<TKey, TValue>>[] table;
 
         /// <summary>
         /// Size of current table.
@@ -28,7 +31,7 @@ namespace AlgorithmsCollection
         public bool IsReadOnly => false;
         
         /// <summary>
-        /// List of all present keys in table.
+        /// List of all keys present in table.
         /// </summary>
         public List<TKey> Keys => table.SelectMany(list => list.Select(pair => pair.Key)).ToList();
 
@@ -36,9 +39,6 @@ namespace AlgorithmsCollection
         /// List of all present values in table.
         /// </summary>
         public List<TValue> Values => table.SelectMany(list => list.Select(pair => pair.Value)).ToList();
-
-        private IEqualityComparer<TKey> Comparer { get; set; } = null;
-        private List<KeyValuePair<TKey, TValue>>[] table;
         
         /// <summary>
         /// Create hashtable with given table size (optional).
@@ -161,7 +161,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Check whether hashtable contains an element with given key.
         /// </summary>
-        /// <param name="key">Key of element to check</param>
+        /// <param name="key">Element's key to check</param>
         /// <returns>True if table contains element with given key, otherwise false</returns>
         public bool Contains(TKey key)
         {
@@ -177,7 +177,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Check whether hashtable contains given element.
+        /// Check whether hashtable contains given element (both key and value must match).
         /// </summary>
         /// <param name="item">Element to check</param>
         /// <returns>True if hashtable contains given element, otherwise false</returns>
@@ -191,7 +191,7 @@ namespace AlgorithmsCollection
         public bool Remove(TKey key) => RemoveImpl(key, null);
 
         /// <summary>
-        /// Remove first occurence of given element.
+        /// Remove first occurence of given element (both key and value must match).
         /// </summary>
         /// <param name="item">Element to remove</param>
         /// <returns>True if any element was removed, otherwise false</returns>

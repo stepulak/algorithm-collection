@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Generic splay tree. Splay tree is just another self-balancing tree with logarithmic
+    /// Generic splay tree. 
+    /// Splay tree is just another self-balancing tree with logarithmic
     /// search, insert and delete operations (amortized in this case).
     /// </summary>
-    /// <typeparam name="TKey">Type of key</typeparam>
-    /// <typeparam name="TValue">Type of value</typeparam>
+    /// <typeparam name="TKey">Element's key type</typeparam>
+    /// <typeparam name="TValue">Element's value type</typeparam>
     public class SplayTree<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>
     {
         private class Node
@@ -99,6 +100,7 @@ namespace AlgorithmsCollection
         /// Key comparer used in tree search, insert and delete operations.
         /// </summary>
         public IComparer<TKey> KeyComparer { get; private set; } = DefaultKeyComparer;
+
         public bool IsReadOnly => false;
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Create tree and fill it with elements.
+        /// Create tree with default comparer and fill it with elements.
         /// </summary>
         /// <param name="enumerable">Elements to insert</param>
         public SplayTree(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
@@ -147,7 +149,7 @@ namespace AlgorithmsCollection
         /// Find node with given key.
         /// </summary>
         /// <param name="key">Key of node to find</param>
-        /// <returns>Node containing given key if any found, otherwise null</returns>
+        /// <returns>Node that contains given key if any found, otherwise null</returns>
         public ReadOnlyNode? Find(TKey key)
         {
             var result = FindNodeImpl(key);

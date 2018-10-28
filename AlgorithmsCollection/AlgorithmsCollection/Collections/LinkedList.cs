@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Generic double-linked list. Very similar to .NET linked list.
+    /// Generic double-linked list. Very similar to .NET LinkedList class.
     /// </summary>
     /// <typeparam name="T">Element's type</typeparam>
     public class LinkedList<T> : ICollection<T>, IEnumerable<T>
@@ -33,8 +33,19 @@ namespace AlgorithmsCollection
         {
             private Node node;
 
+            /// <summary>
+            /// Previous node.
+            /// </summary>
             public ReadOnlyNode? Previous => Create(node.Previous);
+
+            /// <summary>
+            /// Next node.
+            /// </summary>
             public ReadOnlyNode? Next => Create(node.Next);
+
+            /// <summary>
+            /// Node's value.
+            /// </summary>
             public T Value
             {
                 get { return node.Value; }
@@ -42,6 +53,11 @@ namespace AlgorithmsCollection
             }
             public object ThisNode => node;
 
+            /// <summary>
+            /// Create read only node from private LinkedList's Node class.
+            /// </summary>
+            /// <param name="node"></param>
+            /// <returns></returns>
             public static ReadOnlyNode? Create(object node)
             {
                 if (node != null)
@@ -56,20 +72,35 @@ namespace AlgorithmsCollection
         private Node backNode = null;
         
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Number of elements in list.
+        /// </summary>
         public int Count { get; private set; } = 0;
+
+        /// <summary>
+        /// Check whether list is empty.
+        /// </summary>
         public bool Empty => Count == 0;
 
         /// <summary>
-        /// Value of front node.
+        ///Front node's value.
         /// </summary>
         public T FrontValue => frontNode.Value;
 
         /// <summary>
-        /// Value of back node.
+        /// Back node's value.
         /// </summary>
         public T BackValue => backNode.Value;
         
+        /// <summary>
+        /// Front node.
+        /// </summary>
         public ReadOnlyNode? FrontNode => ReadOnlyNode.Create(frontNode);
+
+        /// <summary>
+        /// Back node.
+        /// </summary>
         public ReadOnlyNode? BackNode => ReadOnlyNode.Create(backNode);
         
         /// <summary>
@@ -80,7 +111,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Create list and fill it with values
+        /// Create list and fill it with given values.
         /// </summary>
         /// <param name="values">Values to fill</param>
         public LinkedList(IEnumerable<T> values)
@@ -193,7 +224,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Insert value before given node.
         /// </summary>
-        /// <param name="node">Insert before this node</param>
+        /// <param name="node">Insert value before this node</param>
         /// <param name="value">Value to insert</param>
         public void InsertBefore(ReadOnlyNode node, T value)
         {
@@ -216,14 +247,14 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Insert value before node at given index.
         /// </summary>
-        /// <param name="index">Insert before node at this index</param>
+        /// <param name="index">Insert value before node at this index</param>
         /// <param name="value">Value to insert</param>
         public void InsertBefore(int index, T value) => InsertBefore(NodeAt(index), value);
         
         /// <summary>
         /// Insert value after given node.
         /// </summary>
-        /// <param name="node">Insert after this node</param>
+        /// <param name="node">Insert value after this node</param>
         /// <param name="value">Value to insert</param>
         public void InsertAfter(ReadOnlyNode node, T value)
         {
@@ -246,7 +277,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Insert value after node at given index.
         /// </summary>
-        /// <param name="index">Insert after node at this index</param>
+        /// <param name="index">Insert value after node at this index</param>
         /// <param name="value">Value to insert</param>
         public void InsertAfter(int index, T value) => InsertAfter(NodeAt(index), value);
 
@@ -302,7 +333,7 @@ namespace AlgorithmsCollection
         /// Remove node with first occurence of given value.
         /// </summary>
         /// <param name="value">Value to delete</param>
-        /// <returns>True if any node was deleted</returns>
+        /// <returns>True if any node was deleted, false otherwise</returns>
         public bool Remove(T value)
         {
             var node = Find(v => v.Equals(value));
@@ -387,14 +418,14 @@ namespace AlgorithmsCollection
         public bool Contains(T value) => Find(v => v.Equals(value)) != null;
 
         /// <summary>
-        /// Swap values at nodes with given indices.
+        /// Swap values in nodes at given indices.
         /// </summary>
         /// <param name="indexA">Index of first node</param>
         /// <param name="indexB">Index of second node</param>
         public void Swap(int indexA, int indexB) => Swap(NodeAt(indexA), NodeAt(indexB));
 
         /// <summary>
-        /// Swap values at given nodes.
+        /// Swap values in given nodes.
         /// </summary>
         /// <param name="nodeA">First node</param>
         /// <param name="nodeB">Second node</param>

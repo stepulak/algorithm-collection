@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Standard generic binary heap with automatic notification of change of value's position in heap.
+    /// Standard generic binary heap with automatic change notification of value's position in heap.
     /// </summary>
     /// <typeparam name="T">Type of value</typeparam>
     public class BinaryHeap<T> : ICollection<T>
@@ -29,8 +29,16 @@ namespace AlgorithmsCollection
         /// </summary>
         public ReadOnlyCollection<T> Tree => new ReadOnlyCollection<T>(tree);
 
+        /// <summary>
+        /// Number of elements in heap.
+        /// </summary>
         public int Count => tree.Count;
+
+        /// <summary>
+        /// Root value.
+        /// </summary>
         public T Root => tree.First();
+
         public bool IsReadOnly => false;
 
         /// <summary>
@@ -73,7 +81,7 @@ namespace AlgorithmsCollection
         public void Clear() => tree.Clear();
 
         /// <summary>
-        /// Reserve capacity in heap. If the given capacity is lower, then the tree will be shrinked.
+        /// Reserve capacity in heap. If the given capacity is lower, then the tree will be shrank.
         /// </summary>
         /// <param name="n">Number of elements.</param>
         public void ReserveCapacity(int n) => tree.Capacity = n;
@@ -157,11 +165,11 @@ namespace AlgorithmsCollection
         /// Find first value that match given predicate.
         /// </summary>
         /// <param name="predicate">Predicate</param>
-        /// <returns>First value that fulfull given predicate</returns>
+        /// <returns>First value that fulfill given predicate</returns>
         public T Find(Predicate<T> predicate) => tree.Find(predicate);
 
         /// <summary>
-        /// Find all values that fulfull given predicate.
+        /// Find all values that fulfill given predicate.
         /// </summary>
         /// <param name="predicate">Predicate</param>
         public List<T> FindAll(Predicate<T> predicate) => tree.FindAll(predicate);
@@ -170,7 +178,7 @@ namespace AlgorithmsCollection
         /// Remove first occurence of given value in heap.
         /// </summary>
         /// <param name="value">Value to remove</param>
-        /// <returns>True if values was removed, false otherwise</returns>
+        /// <returns>True if value was removed, false otherwise</returns>
         public bool Remove(T value) => Remove(v => Comparer.Compare(v, value) == 0);
         
         /// <summary>

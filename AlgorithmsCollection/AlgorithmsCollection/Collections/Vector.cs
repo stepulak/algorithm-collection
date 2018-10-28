@@ -20,12 +20,17 @@ namespace AlgorithmsCollection
         /// Number of elements in vector.
         /// </summary>
         public int Count { get; private set; } = 0;
+
+        /// <summary>
+        /// Check whether vector is empty.
+        /// </summary>
         public bool Empty => Count == 0;
 
         /// <summary>
         /// Number of reserved elements.
         /// </summary>
         public int Capacity => vector.Length;
+
         public bool IsReadOnly => false;
 
         /// <summary>
@@ -100,7 +105,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Insert value before given index. Values after index are automatically moved by one to the right.
+        /// Insert value before given index. All values after and including index are automatically moved by one to the right.
         /// </summary>
         /// <param name="value">Value to insert</param>
         /// <param name="index">Index of position</param>
@@ -114,7 +119,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Insert value after given index. Values after index are automatically moved by one to the right.
+        /// Insert value after given index. All values after index are automatically moved by one to the right.
         /// </summary>
         /// <param name="value">Value to insert</param>
         /// <param name="index">Index of position</param>
@@ -133,7 +138,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Get/set value at given position.
         /// </summary>
-        /// <param name="index">Index of position to get/set</param>
+        /// <param name="index">Index of value's position</param>
         /// <returns></returns>
         public T this[int index]
         {
@@ -205,7 +210,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Remove value at given index and shrink the vector.
+        /// Remove value at given index.
         /// </summary>
         /// <param name="index">Index of value to remove</param>
         public void RemoveAt(int index)
@@ -219,7 +224,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Remove all values that match given predicate. Vector is automatically shrinked.
+        /// Remove all values that match given predicate.
         /// </summary>
         /// <param name="predicate">Predicate to match</param>
         public void RemoveAll(Predicate<T> predicate)
@@ -297,9 +302,9 @@ namespace AlgorithmsCollection
 
         /// <summary>
         /// Change vector's current size and also effectively change Count property.
-        /// If the new size is less than current size, then the vector will be shrinked.
+        /// If the new size is less than current size, then the vector will be shrank.
         /// </summary>
-        /// <param name="size">New size</param>
+        /// <param name="size">New vector's size</param>
         public void Resize(int size)
         {
             if (size <= 0)
@@ -318,9 +323,9 @@ namespace AlgorithmsCollection
         
         /// <summary>
         /// Change vector's current capacity. If the new capacity is less than current capacity,
-        /// then the vector will be shrinked.
+        /// then the vector will be shrank.
         /// </summary>
-        /// <param name="capacity">New capacity</param>
+        /// <param name="capacity">New vector's capacity</param>
         public void Reserve(int capacity)
         {
             if (capacity <= Count)

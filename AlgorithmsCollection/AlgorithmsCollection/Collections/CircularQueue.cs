@@ -15,6 +15,13 @@ namespace AlgorithmsCollection
     {
         private const int DefaultBufferSize = 256;
 
+        private int StartIndex => start % Capacity;
+        private int EndIndex => end % Capacity;
+
+        private T[] buffer;
+        private int start = 0;
+        private int end = 0;
+
         /// <summary>
         /// Number of elements in queue.
         /// </summary>
@@ -24,14 +31,11 @@ namespace AlgorithmsCollection
         /// Reserved capacity of queue.
         /// </summary>
         public int Capacity => buffer.Length;
+
+        /// <summary>
+        /// Check whether queue is empty.
+        /// </summary>
         public bool Empty => Count == 0;
-
-        private int StartIndex => start % Capacity;
-        private int EndIndex => end % Capacity;
-
-        private T[] buffer;
-        private int start = 0;
-        private int end = 0;
         
         /// <summary>
         /// Default constructor.
@@ -44,7 +48,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Create queue with given capacity
         /// </summary>
-        /// <param name="capacity"></param>
+        /// <param name="capacity">Queue capacity</param>
         public CircularQueue(int capacity)
         {
             CheckSizeThrow(capacity);
@@ -54,7 +58,7 @@ namespace AlgorithmsCollection
         /// <summary>
         /// Create queue and fill it with given values.
         /// </summary>
-        /// <param name="enumerable">Values to fill with the queue</param>
+        /// <param name="enumerable">Values to fill into the queue</param>
         public CircularQueue(IEnumerable<T> enumerable)
         {
             if (enumerable == null)
@@ -86,7 +90,7 @@ namespace AlgorithmsCollection
         /// Check if queue contains given value.
         /// </summary>
         /// <param name="value">Value to check</param>
-        /// <returns>True, if queue contains given value, otherwise false.</returns>
+        /// <returns>True if queue contains given value, otherwise false.</returns>
         public bool Contains(T value)
         {
             foreach (var elem in this)
@@ -115,7 +119,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Return removed first value from queue.
+        /// Return and remove first value from queue.
         /// </summary>
         /// <returns>Removed first value.</returns>
         public T Dequeue()
@@ -131,7 +135,7 @@ namespace AlgorithmsCollection
         }
         
         /// <summary>
-        /// Resize queue. If the new size is lower than current size, then the queue will be shrinked.
+        /// Resize queue. If the new size is lower than current size, then the queue will be shrank.
         /// </summary>
         /// <param name="size">New size</param>
         public void Resize(int size)
