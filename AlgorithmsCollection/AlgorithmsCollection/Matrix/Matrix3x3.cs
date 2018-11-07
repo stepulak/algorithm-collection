@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Templated square 3x3 matrix.
+    /// Templated 3x3 (square) matrix.
     /// </summary>
     /// <typeparam name="T">Type of value in matrix</typeparam>
     public class Matrix3x3<T> : MatrixNxN<T>

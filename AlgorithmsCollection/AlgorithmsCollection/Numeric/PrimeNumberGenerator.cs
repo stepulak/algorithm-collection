@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AlgorithmsCollection
 {
     /// <summary>
-    /// Class for generating consecutive prime numbers.
+    /// Class for consecutive prime numbers generation.
     /// </summary>
     public class PrimeNumberGenerator
     {

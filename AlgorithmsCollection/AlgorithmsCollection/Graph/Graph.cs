@@ -243,7 +243,7 @@ namespace AlgorithmsCollection
         public int GetIndex(ReadOnlyNode readOnlyNode) => nodes.FindIndex(node => node.Id == (readOnlyNode.ThisNode as Node).Id);
 
         /// <summary>
-        /// Find index of node's value that match given predicate.
+        /// Find index of node that it's value match given predicate.
         /// </summary>
         /// <param name="predicate">Predicate to match</param>
         /// <returns>Index of node's value that match predicate, otherwise -1 if no node is found</returns>
@@ -461,7 +461,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Run Dijkstra algorithm and count minimum distance from givennode
+        /// Run Dijkstra algorithm and count minimum distance from given node.
         /// </summary>
         /// <param name="startNode">Starting node</param>
         public void Dijkstra(ReadOnlyNode startNode)

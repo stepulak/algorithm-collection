@@ -57,7 +57,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Create matrix from given values. Rows and columns are inherited from values dimensions.
+        /// Create matrix from given values. Number of rows and columns is inherited from values dimensions.
         /// </summary>
         /// <param name="values">Array of values</param>
         public Matrix(T[,] values) : this(values.GetLength(0), values.GetLength(1))
@@ -80,9 +80,9 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Return matrix as array.
+        /// Return matrix as an array.
         /// </summary>
-        /// <returns>Matrix as array</returns>
+        /// <returns>Matrix as an array</returns>
         public T[,] GetMatrix() => matrix;
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <param name="mat1">Matrix A</param>
         /// <param name="mat2">Matrix B</param>
-        /// <returns></returns>
+        /// <returns>A+B</returns>
         public static Matrix<T> operator +(Matrix<T> mat1, Matrix<T> mat2) => MatricesTransform(mat1, mat2, (value1, value2) => (dynamic)value1 + value2);
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <param name="mat1">Matrix A</param>
         /// <param name="mat2">Matrix B</param>
-        /// <returns></returns>
+        /// <returns>A-B</returns>
         public static Matrix<T> operator -(Matrix<T> mat1, Matrix<T> mat2) => MatricesTransform(mat1, mat2, (value1, value2) => (dynamic)value1 - value2);
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <param name="matrix">Matrix</param>
         /// <param name="value">Value</param>
-        /// <returns></returns>
+        /// <returns>A*k</returns>
         public static Matrix<T> operator *(Matrix<T> matrix, T value) => MatrixTransform(matrix, (matrixValue) => (dynamic)value * matrixValue);
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <param name="value">Value</param>
         /// <param name="matrix">Matrix</param>
-        /// <returns></returns>
+        /// <returns>k*A</returns>
         public static Matrix<T> operator *(T value, Matrix<T> matrix) => matrix * value;
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <param name="mat1">Matrix A</param>
         /// <param name="mat2">Matrix B</param>
-        /// <returns></returns>
+        /// <returns>A*B</returns>
         public static Matrix<T> operator *(Matrix<T> mat1, Matrix<T> mat2)
         {
             if (mat1.Columns != mat2.Rows)

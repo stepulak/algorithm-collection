@@ -73,7 +73,7 @@ namespace AlgorithmsCollection
         }
         
         /// <summary>
-        /// Count GCD for two numbers. Working well with negative values aswell.
+        /// Count GCD of two numbers. Working well with negative values aswell.
         /// </summary>
         /// <param name="a">First number</param>
         /// <param name="b">Second number</param>
@@ -96,7 +96,7 @@ namespace AlgorithmsCollection
         }
 
         /// <summary>
-        /// Count LCM for two numbers. Only for unsigned numbers.
+        /// Count LCM of two numbers. Only for unsigned numbers.
         /// </summary>
         /// <param name="a">First number</param>
         /// <param name="b">Second number</param>
@@ -166,9 +166,6 @@ namespace AlgorithmsCollection
         /// </summary>
         /// <typeparam name="T">Type of float number (float, double)</typeparam>
         /// <returns>Equality comparer for float numbers</returns>
-        public static IEqualityComparer<T> FloatNumberEqualityComparer<T>()
-        {
-            return new FloatNumberEqualityCmp<T>();
-        }
+        public static IEqualityComparer<T> FloatNumberEqualityComparer<T>() => new FloatNumberEqualityCmp<T>();
     }
 }
